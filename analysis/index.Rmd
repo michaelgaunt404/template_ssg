@@ -8,6 +8,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Wdddd
 
-This is a temp change.
+* [Temp Analysis](temp_analysis.html)
+  + Investigates maintenance costs for KCM vehicles give their age and meter mileage
+  + Calculates monthly maintenance costs per vehicle type (monthly cost/miles driven)
+
+
