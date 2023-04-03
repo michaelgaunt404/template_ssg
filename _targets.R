@@ -5,7 +5,7 @@
 
 # Load packages required to define the pipeline:
 library(targets)
-# library(tarchetypes) # Load other packages as needed. # nolint
+library(tarchetypes) # Load other packages as needed. # nolint
 
 # Set target options:
 tar_option_set(
@@ -35,5 +35,5 @@ list(
     name = model,
     command = coefficients(lm(y ~ x, data = data))
   )
-  ,tar_render(analysis_icrs, "analysis/analysis_temp.rmd")
+  ,tar_render(temp_analysis, "analysis/temp_analysis.rmd")
 )
