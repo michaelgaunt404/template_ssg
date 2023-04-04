@@ -377,7 +377,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -388,8 +388,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -402,9 +402,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>template_ssg/</code> <span
@@ -427,21 +427,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -532,15 +529,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreeee682ebeca1b490caffde054168b4cd0f4e68433targetblankee682eba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreef6da2c8b6e8b907d13ff0843a244b3ef47f9d826targetblankf6da2c8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/michaelgaunt404/template_ssg/tree/ee682ebeca1b490caffde054168b4cd0f4e68433" target="_blank">ee682eb</a>
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/f6da2c8b6e8b907d13ff0843a244b3ef47f9d826" target="_blank">f6da2c8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreeee682ebeca1b490caffde054168b4cd0f4e68433targetblankee682eba"
+id="strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreef6da2c8b6e8b907d13ff0843a244b3ef47f9d826targetblankf6da2c8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -550,7 +547,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/michaelgaunt404/template_ssg/tree/ee682ebeca1b490caffde054168b4cd0f4e68433" target="_blank">ee682eb</a>.
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/f6da2c8b6e8b907d13ff0843a244b3ef47f9d826" target="_blank">f6da2c8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -565,6 +562,7 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    R/
     Ignored:    _targets/meta/process
@@ -582,13 +580,9 @@ Ignored files:
     Ignored:    data/icrs_data.csv
     Ignored:    data/nocp_counts_by_trip_date.csv
 
-Untracked files:
-    Untracked:  code/zz_global.R
-
 Unstaged changes:
     Modified:   _targets.R
     Modified:   _targets/meta/meta
-    Modified:   analysis/temp_analysis.Rmd
 
 </code></pre>
 <p>
@@ -634,6 +628,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michaelgaunt404/template_ssg/blob/a65eba888bda38d94894c2b30a03dac0a6b3ce38/analysis/temp_analysis.Rmd" target="_blank">a65eba8</a>
+</td>
+<td>
+michaelgaunt404
+</td>
+<td>
+2023-04-03
+</td>
+<td>
+add icrs targets
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michaelgaunt404/template_ssg/a65eba888bda38d94894c2b30a03dac0a6b3ce38/docs/temp_analysis.html" target="_blank">a65eba8</a>
+</td>
+<td>
+michaelgaunt404
+</td>
+<td>
+2023-04-03
+</td>
+<td>
+add icrs targets
+</td>
+</tr>
 <tr>
 <td>
 html
