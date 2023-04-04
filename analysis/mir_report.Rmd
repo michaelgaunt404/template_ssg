@@ -1,0 +1,499 @@
+---
+title: "MIR Daily Report"
+subtitle: "Monitoring image request processing and status."
+author: "Mike Gaunt & Kara Todd"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, cache.lazy = FALSE, autodep = TRUE, warning = FALSE, 
+  message = FALSE, echo = TRUE, dpi = 180,
+  fig.width = 5, fig.height = 3, echo = FALSE
+  )
+```
+
+<!--#general comments===========================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This is [[insert description here - what it does/solve]]
+#
+# By: mike gaunt, michael.gaunt@wsp.com
+#
+# README: [[insert brief readme here]]
+#-------- [[insert brief readme here]]
+#
+# *please use 80 character margins
+# *please go to https://pkgs.rstudio.com/flexdashboard/articles/layouts.html
+# to explore the different layouts available for the flexdashboard framework
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!--#library set-up=============================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{r}
+library(magrittr)
+library(tidyverse)
+library(targets)
+library(here)
+library(kableExtra)
+library(reactable)
+# library(kable)
+# library(kableExtra)
+```
+
+<!--#source helpers/utilities===================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{r}
+# library(magrittr)
+# source(here("code/helpers_general.r"))
+# source(here("code/helpers_aggregation.r"))
+# source(here("code/helpers_plotly.r"))
+# source(here("code/helpers_DT.r"))
+# source(here("code/helpers_data_import.r"))
+
+
+#placing this here, mike can run if he's lazy and doesn't want to run two scripts
+#should always be commented out
+# source(here("code/script_process_icrs.r"))
+```
+
+```{js}
+function filter_default(){
+  document.getElementById("res_created_irr_disp").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+  document.getElementById("res_updatedat").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+}
+    
+$(document).ready(filter_default);
+```
+
+<!--#source data================================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev 
+#area to upload data with and to perform initial munging
+#please add test data here so that others may use/unit test these scripts -->
+
+```{r cache=FALSE}
+icrs = tar_read("data_icrs")
+icrs_prev = tar_read("data_icrs")
+temp_ttl = tar_read("data_mult_unident_agg")[[2]]
+```
+
+
+## Intro
+
+This is the first attempt at an ICRS report. The intent of this document is to provide some context to the data queried by the new ICRS query. 
+
+This document is under development and will act as a report as well as a template that will be used for reoccurring analyses. Some of the content may be holdover analysis artifacts. 
+
+The data used for this analysis extends from ``r min(icrs$trip_date)`` to ``r max(icrs$trip_date)``.    
+It was queried on ``r min(icrs$queried_at)``.
+
+## Summary/Observations
+
+<details>
+<summary>Click to Expand</summary>
+
+::: {style="padding: 1em; background: #DCDCDC; border-radius: 10px"}
+ 
+Removed. 
+
+:::
+
+</details> 
+
+## Data Overview
+
+The data used for this report is pre-aggregated count data. The data is aggregated by a number of trip attributes - e.g. when and where the trip occurred, etc. This aggregation was performed to limit the size of the data and make it easier to manage across different platforms.
+
+Variable Summary:
+
+<details>
+<summary>Click to Expand</summary>
+
+Grouping Attributes: 
+
++ `trip_date`: trip occurrence date used for trip aggregation 
++ `isrequested`: flag indicating if a IRR request has been submitted 
++ `isresponded`: flag indicating if QFree has acknowledged the submitted IRR
++ `disputeNullFlag`: indicates if a review was disputed
++ `disposition`: the outcome of the image review
++ `result`: what type of IRR was performed
++ `dispute`: type of the IRR dispute (NA indicates no dispute)  
++ `created_intrip`: date trip was created in*lance trip* table
++ `created_intpid `: date trip was created in *lance tripPassage* table
++ `created_irr_req `: date trip was created in *qfree request* table
++ `created_irr_disp `: date trip was created *qfree disposition* table
++ `diff_created_trip`: number of days it took trip to enter *lance tables* from when the trip occurred 
++ `diff_created_ireq`: number of days it took trip to enter *qfree tables* from when the trip occurred 
++ `diff_created_irr_disp`: number of days it took trip to be assigned a disposition from when the trip occurred 
++ `time_kapsch`: number of days Kapsch was responsible for a trip
+  - formula: `created_intpid - trip_date`
++ `time_etan`: number of days ETAN was responsible for a trip
+  - formula: `created_irr_req - created_intpid`
++ `time_qfree`: number of days QFree was responsible for a trip
+  - formula: `created_irr_disp - created_irr_req`
+
+Count Attributes:
+
++ `count`: count of trips given unique combinations of the above attributes
+
+This table displays a sample of the raw trip level data. 
+```{r}
+#not good
+icrs %>% 
+  sample_n(100) %>% 
+  mutate(row_number = dplyr::row_number()) %>% 
+  reactable(
+    highlight = T,
+    outlined = T,
+    bordered = T,
+    striped = T
+  )
+```
+
+</details> 
+
+## IRR Process Status {#yolo}
+
+This section details the status of the trip image review process. Trips in the `image review request table` but not in the `image review results table` have yet to be processed by QFREE and do not have a disposition associated with it. 
+
+### Unidentifed Plate Backlog {.tabset}
+
+#### Overview
+
+The plot below provides a historical account of the total number of unidentified plates at the time the data was queried. Currently, there are ``r temp_ttl %>% filter(queried_at == max(queried_at)) %>% pull(count)`` trips that have unidentified plates.
+
+```{r fig.height = 3, fig.width=5}
+tar_read("pltobject_overview_unident_agg")
+```
+
+#### Cumulative Daily Counts 
+
+The plot below provides a historical account of the total number of unidentified plates given trip occurrence month at the time the data was queried. The accompanying table details the current total number of unidentified plates by the month a trip occurred in.
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r fig.height = 2, fig.width=3}
+tar_read("pltobject_cum_unident_by_mon")
+```
+
+:::
+
+::: {}
+
+```{r fig.height = 2}
+tar_load(data_icrs_prev_month)
+data_icrs_prev_month %>%
+  na.omit() %>% 
+  group_by(date_month) %>%  
+  filter(`Monthly Cumulative` == max(`Monthly Cumulative`)) %>%  
+  select(date_month, `Monthly Cumulative`) %>%  
+  set_names(c("Month", "Unidentified Plates")) %>%  
+  kbl() %>%  
+  kable_minimal(full_width = F)
+```
+
+:::
+
+::::
+
+### {-}
+
+### Plate Identification Counts {.tabset}
+
+The below plots detail aggregate trip counts by plate identification status and trip occurrence:
+
+#### Weekly Counts {#week-agg}
+```{r, my_chunk}
+tar_read("pltobject_counts_id_unident_week")
+```
+
+#### Daily Counts {#daily-agg}
+```{r}
+tar_read("pltobject_counts_id_unident_day")
+```
+
+### {-}
+
+### Plate Identification Completion {.tabset}
+
+The below plots detail trips with identified plates by the date the identification was completed. 
+
+#### 2-week Snapshot
+
+This plot provides a snapshot of all plates identified by QFREE in the last 2 weeks by the date each trip occurred.
+```{r fig.height = 2, fig.width=5}
+tar_read("pltobject_overview_2week")
+```
+
+#### Completion Date (total) 
+
+This plot details counts of identified plates aggregated by the day ETAN received them from QFREE.
+```{r fig.height = 2, fig.width=5}
+tar_read("pltobject_qfree_output_daily")
+```
+
+#### Completion Date (QFREE processes)
+
+This plot details counts of identified plates aggregated by the day ETAN received them from QFREE and by the process by which they were identified.
+```{r} 
+tar_read("pltobject_qfree_output_comp_date")
+```
+
+#### Completion Date (Roadway)
+```{r}
+tar_read("pltobject_qfree_output_comp_date_rdwy")
+```
+
+### {-}
+
+## IRR Processing Rates {#output}
+
+This section quantifies the time to identify plates in a number of ways. The methods used to quantify this output is describe by the bullet points below:
+
++ Vendor: the number of days a trip is held by a vendor 
++ Cumulative Plate Identification Time: the number of days it took a trip to reach a specific processing stage/milestone
+  - `Created in ETAN`: time difference (in days) between when a trip occurred and when it was entered in ETAN database 
+  - `IRR Requested`: time difference (in days) between when a trip occurred and when it was sent to QFREE for IRR
+  - `Plate Identified`: time difference (in days) between when a trip occurred and when plate identification was received by ETAN from QFREE
++ FREE Detailed Process: the number of days it took QFREE to identify a plate by plate identification method - AutoPass, MIR, or Rereview
+
+### Days to Identify Plate Values {.tabset}
+
+#### Vendor
+```{r}
+tar_read('pltobject_qfree_ident_plats_vendor')
+```
+
+#### Cum. Plate Ident. Time (Mixed)
+```{r}
+tar_read('pltobject_qfree_ident_plats_vendor_cumm')
+```
+
+#### Cum. Plate Ident. Time (MIR Only)
+```{r}
+tar_read("pltobject_qfree_ident_plats_vendor_cumm_MIR")
+```
+
+#### QFREE Detailed Process (autopass vs MIR)
+```{r}
+tar_read("pltobject_qfree_ident_plats_type")
+```
+
+
+
+
+#### Roadway
+```{r}
+tar_read("pltobject_qfree_ident_plats_type")
+```
+
+### {-}
+
+### Plate Identification Duration Counts
+
+The plot details counts of trips given days with vendor - Kapsch, ETAN, or Qfree - per trip occurrence week. Time spent with vendor has been discretized into discrete bins for visual clarity. 
+
+Example: Kapsch takes 8 days to send a trip to ETAN, this trip falls into the *Between 5 and 10* days bin.
+
+```{r}
+tar_read("pltobject_qfree_ident_plats_dur")
+```
+
+
+### Trip Processing Matrices {.tabset}
+
+The plots below display aggregated counts of processed trips given trip occurrence date and processing date. The first tab details counts with respect to when a trip was fully processed and the second tab details trips by when they first entered the QFree tables for processing. The drop down selector can be used to filter points by total processed trip counts.  
+
+*BUG: plots initialize very zoomed out - interaction with drop down will fix this issue. Permanent fix coming soon.
+
+#### Fully Processed 
+
+```{r}
+tar_read("pltobject_qfree_trip_matrice_fullpro")
+```
+
+#### Before QFree
+```{r}
+tar_read("pltobject_qfree_trip_matrice_preQfree")
+```
+
+### {-}
+
+### Plate Identification Result: {.tabset}
+
+#### Disposition Status
+```{r fig.height=2}
+tar_read('pltobject_qfree_pir_status')
+```
+
+#### Result Method
+```{r fig.height=2}
+tar_read("pltobject_qfree_pir_method")
+```
+
+### {-}
+
+## Rejected Plates: {.tabset}
+
+### Total
+```{r fig.height=2}
+# tmp_current <- icrs %>%  
+#   .[,.(trip_count = sum(count)), by = .(trip_date = floor_date(trip_date, "week"), disposition)] %>% 
+#     filter(disposition == "24-REJECTED_UNREADABLE" | disposition ==  "23-REJECTED_WHITE_LIST") %>% 
+#     pivot_wider(names_from = disposition, values_from = trip_count)
+# 
+#   
+# tmp_prev <- old_data %>% 
+#     .[,.(trip_count = sum(count)), by = .(trip_date = floor_date(trip_date, "week"), disposition)] %>% 
+#     filter(disposition == "24-REJECTED_UNREADABLE" | disposition ==  "23-REJECTED_WHITE_LIST") %>% 
+#     pivot_wider(names_from = disposition, values_from = trip_count)
+# colnames(tmp_prev)[2:ncol(tmp_prev)] <- paste0(colnames(tmp_prev)[2:ncol(tmp_prev)], "_prev")
+# if(!"23-REJECTED_WHITE_LIST_prev" %in% colnames(tmp_prev)){tmp_prev <- tmp_prev %>% mutate("23-REJECTED_WHITE_LIST_prev"=0)}
+# 
+# tmp <- full_join(tmp_current, tmp_prev, by = "trip_date") %>% arrange(trip_date) %>% replace(is.na(.), 0)
+# colnames(tmp) <- gsub("\\d\\d-", "", colnames(tmp))
+# 
+# plot_ly(tmp, x = ~trip_date) %>% 
+#     add_trace(y = ~REJECTED_UNREADABLE, name="24-REJECTED-UNREADABLE", showlegend=T, type="scatter", mode="lines", connectgaps = T, line=list(color ='#e377c2')) %>%  
+#     add_trace(y = ~REJECTED_WHITE_LIST, name="23-REJECTED-WHITE LIST", showlegend=T, type="scatter", mode="lines", connectgaps = T, line=list(color ='#9467bd')) %>%  
+#     add_trace(y = ~REJECTED_UNREADABLE_prev, name = "rej_24_prev", showlegend=F, mode="lines", line=list(dash="dash", color ='#e377c2'), visible=F) %>% 
+#     add_trace(y = ~REJECTED_WHITE_LIST_prev, name = "rej_23_prev",  showlegend=F, mode="lines", line=list(dash="dash", color ='#9467bd'), visible=F) %>% 
+#     layout(xaxis = list(title = "Trip Date",
+#       rangeselector = list(
+#            buttons = list(
+#              list(count = 1, label = "1 mo", step = "month", stepmode = "backward"),
+#              list(count = 1, label = "YTD", step = "year", stepmode = "todate"),
+#              list(step = "all")
+#     ))),
+#     yaxis = list(title = "Trip Count"),
+#     updatemenus = list(
+#         list(type = "buttons",
+#           xanchor = "right",
+#           yanchor = "center",
+#           x = 1.27, y = 0.7,
+#           buttons = list(
+#              list(method = "restyle",
+#                   args = list("visible", list(T, T, T, T)),
+#                   label = "Show Previous Query"),
+#               list(method = "restyle",
+#                    args = list("visible", list(T, T, F, F)),
+#                    label = "Hide Previous Query"))
+#      ))
+#     )
+```
+
+### Rejections by Roadway
+```{r}
+# temp = icrs_safe %>%
+#   fix_facility() %>%
+#   filter(disposition == "24-REJECTED_UNREADABLE") %>%
+#   select(!disposition) %>%
+#   # arrange(trip_date) %>%  
+#   # pull(trip_date) %>%  
+#   # unique()
+#   mutate(trip_date = floor_date(trip_date, "day")) %>%
+#   count_percent_zscore(grp_c = c(trip_date, facility)
+#                        ,grp_p = c(trip_date)) 
+#   # group_by(facility) %>%
+#   # complete(trip_date   = seq.Date(min(trip_date), max(trip_date), by = "day")) %>%
+#   # mutate(across(c(count, percent), ~replace(.x, is.na(.x), 0)))
+# 
+# temp %>%
+#   pivot_longer(cols = c(count, percent)) %>%
+#   plot_ly(x = ~trip_date, y = ~value, color = ~facility
+#           ,type = "scatter", mode = "line"
+#           # ,type = "bar"
+#           ,transforms = list(
+#             list(type = 'filter', target = ~name,
+#                  operation = '=', value = "count")
+#           )) %>%
+#   layout(updatemenus = make_menu_item(name_list = c('count', 'percent'), filter_pos = 0,
+#                                       direction = "right", x = -.1, y = 1.2)
+#          # ,barmode = 'stack'
+#          ,yaxis = list(title = "")
+#          ,xaxis = list(rangeslider = list(visible = T)))
+```
+
+### By Completion Date
+
+```{r}
+# icrs_safe %>% 
+#   .[disposition == "24-REJECTED_UNREADABLE",] %>% 
+#   .[,.(Count = sum(count)), by = .(queried_at, created_irr_disp)] %>% 
+#   .[order(created_irr_disp)] %>% 
+#   .[,`:=`(`Rolling 2\nWeek Avg.` = zoo::rollmean(Count, 14, "center"))] %>%
+#   pivot_longer(cols = c(Count, `Rolling 2\nWeek Avg.`)) %>%
+#   plot_ly(x = ~created_irr_disp, y = ~value, color = ~name,
+#           type = "scatter", mode = "line", showlegend=T) %>%
+#   layout(xaxis = list(title = "Date ETAN received from Qfree"),
+#          yaxis = list(title = "Count (trips rejected)"))
+```
+
+### Days to Reject (By Roadway)
+```{r}
+# temp = icrs_safe %>%
+#   filter(!is.na(result)) %>%
+#   filter(disposition == "24-REJECTED_UNREADABLE") %>%
+#   fix_facility() %>%
+#   group_by(trip_date = floor_date(trip_date, "day"), facility, time_qfree) %>%
+#   summarise(count = sum(count), .groups = "drop") %>%
+#   group_by(trip_date, facility) %>%
+#   nest() %>%
+#   mutate(
+#     mean = map(data, ~weighted.mean(.x$time_qfree, .x$count, na.rm = T)),
+#     qauntiles = map(data, ~group_wtd_quantiles(.x, value = "time_qfree", quantiles = c(.5, .95), weight = "count"))) %>%
+#   unnest(cols = c(mean, qauntiles)) %>%
+#   select(!data) %>%
+#   rename(Median = 'time_qfree_50%', Average = 'mean'
+#          ,`95th\nPercentile` = "time_qfree_95%") %>%
+#   pivot_longer(cols = c(Average, Median, `95th\nPercentile`),
+#                names_to = "Metric")
+# ylmt = temp %>%
+#   filter(trip_date > Sys.Date()-months(6)) %>%
+#   pull(value) %>%
+#   max()
+# 
+# ##plot----
+# temp %>%
+#   group_by(facility) %>%
+#   group_map(~{
+#     plot_ly(.x, x=~trip_date, y = ~value, color = ~Metric, legendgroup = ~Metric,
+#             type = "scatter",  mode = 'lines', showlegend = (.y == "520")) %>%
+#       layout(
+#         # xaxis = list(range = quick_date_rng(3))
+#         yaxis = list(
+#           range = c(0, ylmt+ylmt*.10)
+#           ,title = paste0(
+#             c(rep("&nbsp;", 20),
+#               paste("<b>", as.character(.y), "</b>"),
+#               rep("&nbsp;", 20)),
+#             collapse = ""))
+#       )
+#   }) %>%
+#   subplot(nrows = NROW(.), margin = .01, shareX = T, shareY = T, titleY = T) %>%
+#   layout(showlegend = T,
+#          xaxis = make_range_select_buttons(month = c(1,3,6), ttl = "Trip Occurance (day)"))
+```
+## {-}
+
+<!--end-->
+
+
+
+
+
+
+
+
+

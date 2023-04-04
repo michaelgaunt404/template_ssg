@@ -18,10 +18,23 @@ knitr::opts_chunk$set(
   )
 ```
 
-```{r}
-library(targets)
+```{js}
+function filter_default(){
+  document.getElementById("res_created_irr_disp").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+  document.getElementById("res_updatedat").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+}
+    
+$(document).ready(filter_default);
 ```
 
+```{r}
+library(targets)
+
+library(gauntlet)
+library(here)
+library(reactable)
+
+```
 
 <!--#source data================================================================
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,11 +43,30 @@ library(targets)
 #please add test data here so that others may use/unit test these scripts -->
 
 ```{r cache=FALSE}
-tar_load(data)
-tar_load(model)
+# tar_load(data)
+# tar_load(model)
+tar_load(file_acct_cycle_day_smmry)
+tar_load(tble_accts_cycleDay)
+tar_load(tble_accts_cycleDay_wd)
 ```
 
+The following is made directly using the target. 
 ```{r}
-plot(data)
+tble_accts_cycleDay
 ```
+
+The following was made just with the file...
+```{r}
+# table_accts_cycleDay(
+#       file = file_acct_cycle_day_smmry
+#       ,id = "data_accts_cycleDay")
+```
+
+#sd
+```{r}
+tble_accts_cycleDay_wd
+```
+
+
+
 
