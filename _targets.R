@@ -47,7 +47,7 @@ list(
   ,tar_target(data_icrs_raw, make_icrs_mult(file_icrs))
   ,tar_target(data_icrs, make_icrs_most_recent(data_icrs_raw, query_date = NULL))
   ,tar_target(data_icrs_prev, make_icrs_previous(data_icrs_raw))
-  # ,tar_target(data_icrs_prev_month, make_icrs_prev_month(data_icrs, data_icrs_prev, "week"))
+  ,tar_target(data_icrs_prev_month, make_icrs_prev_month(data_icrs, data_icrs_prev, "week"))
   ,tar_target(data_mult_unident_agg, make_mult_unident_agg(data_icrs_raw))
   ,tar_target(data_icrs_aggShort, make_icrs_aggShort(data_icrs))
   ,tar_target(data_icrs_aggShort_stats, make_icrs_aggShort_stats(data_icrs_aggShort))
