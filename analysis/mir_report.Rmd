@@ -1,5 +1,5 @@
 ---
-title: "ICRS Analysis"
+title: "MIR Daily Report"
 subtitle: "Monitoring image request processing and status."
 author: "Mike Gaunt & Kara Todd"
 date: "`r Sys.Date()`"
@@ -38,14 +38,13 @@ knitr::opts_chunk$set(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #content in this section should be removed if in production - ok for dev -->
 ```{r}
-# library(magrittr)
-# library(tidyverse)
-# library(plotly)
-# library(data.table)
-# library(DT)
-# library(lubridate)
-# library(crosstalk)
-# library(here)
+library(magrittr)
+library(tidyverse)
+library(targets)
+library(here)
+library(kableExtra)
+library(reactable)
+# library(kable)
 # library(kableExtra)
 ```
 
@@ -53,11 +52,11 @@ knitr::opts_chunk$set(
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #content in this section should be removed if in production - ok for dev -->
 ```{r}
-library(magrittr)
+# library(magrittr)
 # source(here("code/helpers_general.r"))
 # source(here("code/helpers_aggregation.r"))
 # source(here("code/helpers_plotly.r"))
-source(here("code/helpers_DT.r"))
+# source(here("code/helpers_DT.r"))
 # source(here("code/helpers_data_import.r"))
 
 
@@ -151,8 +150,13 @@ This table displays a sample of the raw trip level data.
 #not good
 icrs %>% 
   sample_n(100) %>% 
-  mutate(id = dplyr::row_number()) %>% 
-  dt_common(y = 200, pl = 1000, dom = "Bftr")
+  mutate(row_number = dplyr::row_number()) %>% 
+  reactable(
+    highlight = T,
+    outlined = T,
+    bordered = T,
+    striped = T
+  )
 ```
 
 </details> 
@@ -188,7 +192,8 @@ tar_read("pltobject_cum_unident_by_mon")
 ::: {}
 
 ```{r fig.height = 2}
-tar_read('data_icrs_prev_month') %>%
+tar_load(data_icrs_prev_month)
+data_icrs_prev_month %>%
   na.omit() %>% 
   group_by(date_month) %>%  
   filter(`Monthly Cumulative` == max(`Monthly Cumulative`)) %>%  
