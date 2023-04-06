@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Mike Gaunt" />
+
+<meta name="date" content="2023-04-05" />
+
+<title>Rejected Trip Analyis</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.5.1/plotly-latest.min.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">template_ssg</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Rejected Trip Analyis</h1>
+<h3 class="subtitle">Monitoring rejected plates via image request review
+process.</h3>
+<h4 class="author">Mike Gaunt</h4>
+<h4 class="date">2023-04-05</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2023-04-05
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>template_ssg/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20230403code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20230403)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20230403code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20230403)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreea9f75ffa595de002f2eacdb5d193be738a1de1a5targetblanka9f75ffa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/a9f75ffa595de002f2eacdb5d193be738a1de1a5" target="_blank">a9f75ff</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtreea9f75ffa595de002f2eacdb5d193be738a1de1a5targetblanka9f75ffa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/a9f75ffa595de002f2eacdb5d193be738a1de1a5" target="_blank">a9f75ff</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    R/
+    Ignored:    _targets/meta/process
+    Ignored:    _targets/meta/progress
+    Ignored:    _targets/objects/
+    Ignored:    _targets/user/
+    Ignored:    analysis/temp_analysis.html
+    Ignored:    data/data_account_creation.csv
+    Ignored:    data/data_acct_cycle_day_summary.csv
+    Ignored:    data/data_csr_closure_summary.csv
+    Ignored:    data/data_image_dl_queue.csv
+    Ignored:    data/data_pass_fulfillment.csv
+    Ignored:    data/data_posting_performance.csv
+    Ignored:    data/data_trip_posting_summary.csv
+    Ignored:    data/escalation_counts_by_trip_date.csv
+    Ignored:    data/icrs_data.csv
+    Ignored:    data/index_imgdl_queue_rdsd.csv
+    Ignored:    data/index_imgdl_queue_tllsts.csv
+    Ignored:    data/nocp_counts_by_trip_date.csv
+
+Untracked files:
+    Untracked:  Rplots.pdf
+    Untracked:  analysis/image_dl_queue_report.Rmd
+    Untracked:  analysis/mir_reject_report.Rmd
+    Untracked:  code/script_daily_data_query_to_large_cpu.R
+    Untracked:  code/zz_.R
+
+Unstaged changes:
+    Modified:   _targets.R
+    Modified:   _targets/meta/meta
+    Modified:   analysis/mir_report.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<!--#general comments===========================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This is [[insert description here - what it does/solve]]
+#
+# By: mike gaunt, michael.gaunt@wsp.com
+#
+# README: [[insert brief readme here]]
+#-------- [[insert brief readme here]]
+#
+# *please use 80 character margins
+# *please go to https://pkgs.rstudio.com/flexdashboard/articles/layouts.html
+# to explore the different layouts available for the flexdashboard framework
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--#library set-up=============================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+<!--#source helpers/utilities===================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+<script type="text/javascript">
+function filter_default(){
+  document.getElementById("res_created_irr_disp").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+  document.getElementById("res_updatedat").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+}
+    
+$(document).ready(filter_default);
+</script>
+<!--#source data================================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev 
+#area to upload data with and to perform initial munging
+#please add test data here so that others may use/unit test these scripts -->
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>This report details rejected trips only.</p>
+<p>The data used for this analysis extends from <code>2023-02-17</code>
+to <code>2023-04-02</code>.<br />
+It was queried on <code>2023-04-03</code>.</p>
+</div>
+<div id="summaryobservations" class="section level2">
+<h2>Summary/Observations</h2>
+<details>
+<summary>
+Click to Expand
+</summary>
+<div style="padding: 1em; background: #DCDCDC; border-radius: 10px">
+<p>Removed.</p>
+</div>
+</details>
+</div>
+<div id="data-overview" class="section level2">
+<h2>Data Overview</h2>
+<p>The data used for this report is pre-aggregated count data. The data
+is aggregated by a number of trip attributes - e.g. when and where the
+trip occurred, etc. This aggregation was performed to limit the size of
+the data and make it easier to manage across different platforms.</p>
+<p>Variable Summary:</p>
+<details>
+<summary>
+Click to Expand
+</summary>
+<p>Grouping Attributes:</p>
+<ul>
+<li><code>trip_date</code>: trip occurrence date used for trip
+aggregation</li>
+<li><code>isrequested</code>: flag indicating if a IRR request has been
+submitted</li>
+<li><code>isresponded</code>: flag indicating if QFree has acknowledged
+the submitted IRR</li>
+<li><code>disputeNullFlag</code>: indicates if a review was
+disputed</li>
+<li><code>disposition</code>: the outcome of the image review</li>
+<li><code>ir_result</code>: what type of IRR was performed</li>
+<li><code>dispute</code>: type of the IRR dispute (NA indicates no
+dispute)<br />
+</li>
+<li><code>created_intrip</code>: date trip was created in<em>lance
+trip</em> table</li>
+<li><code>created_intpid</code>: date trip was created in <em>lance
+tripPassage</em> table</li>
+<li><code>created_irr_req</code>: date trip was created in <em>qfree
+request</em> table</li>
+<li><code>created_irr_disp</code>: date trip was created <em>qfree
+disposition</em> table</li>
+<li><code>diff_created_trip</code>: number of days it took trip to enter
+<em>lance tables</em> from when the trip occurred</li>
+<li><code>diff_created_ireq</code>: number of days it took trip to enter
+<em>qfree tables</em> from when the trip occurred</li>
+<li><code>diff_created_irr_disp</code>: number of days it took trip to
+be assigned a disposition from when the trip occurred</li>
+<li><code>time_kapsch</code>: number of days Kapsch was responsible for
+a trip
+<ul>
+<li>formula: <code>created_intpid - trip_date</code></li>
+</ul></li>
+<li><code>time_etan</code>: number of days ETAN was responsible for a
+trip
+<ul>
+<li>formula: <code>created_irr_req - created_intpid</code></li>
+</ul></li>
+<li><code>time_qfree</code>: number of days QFree was responsible for a
+trip
+<ul>
+<li>formula: <code>created_irr_disp - created_irr_req</code></li>
+</ul></li>
+</ul>
+<p>Count Attributes:</p>
+<ul>
+<li><code>count</code>: count of trips given unique combinations of the
+above attributes</li>
+</ul>
+<p>This table displays a sample of the raw trip level data.</p>
+<pre><code>      trip_date facility isrequested isresponded dispositionNullFlag
+  1: 2023-03-24     520E        TRUE        TRUE                TRUE
+  2: 2023-03-11     520W        TRUE        TRUE                TRUE
+  3: 2023-03-21      TNB        TRUE        TRUE                TRUE
+  4: 2023-03-15     520E        TRUE        TRUE                TRUE
+  5: 2023-03-22      99S        TRUE        TRUE                TRUE
+ ---                                                                
+196: 2023-03-20     520W        TRUE        TRUE                TRUE
+197: 2023-03-17     520W        TRUE        TRUE                TRUE
+198: 2023-03-29      99S        TRUE        TRUE                TRUE
+199: 2023-02-21      TNB        TRUE        TRUE                TRUE
+200: 2023-03-06     520W        TRUE        TRUE                TRUE
+     disputeNullFlag            disposition  ir_result   ir_dispute
+  1:           FALSE          20-IDENTIFIED      1-ISS             
+  2:           FALSE          20-IDENTIFIED      2-MIR             
+  3:           FALSE          20-IDENTIFIED      1-ISS             
+  4:           FALSE          20-IDENTIFIED      1-ISS             
+  5:           FALSE 24-REJECTED_UNREADABLE      2-MIR             
+ ---                                                               
+196:           FALSE          20-IDENTIFIED      2-MIR             
+197:            TRUE          20-IDENTIFIED 3-REREVIEW 2-DMV_REJECT
+198:           FALSE          20-IDENTIFIED      2-MIR             
+199:           FALSE          20-IDENTIFIED      2-MIR             
+200:           FALSE 24-REJECTED_UNREADABLE      2-MIR             
+     created_intrip created_intpid created_irr_req created_irr_disp
+  1:     2023-03-24     2023-03-24      2023-03-24       2023-03-29
+  2:     2023-03-13     2023-03-13      2023-03-13       2023-03-14
+  3:     2023-03-22     2023-03-22      2023-03-22       2023-03-22
+  4:     2023-03-17     2023-03-17      2023-03-18       2023-03-18
+  5:     2023-03-22     2023-03-22      2023-03-22       2023-03-22
+ ---                                                               
+196:     2023-03-21     2023-03-21      2023-03-21       2023-03-24
+197:     2023-03-18     2023-03-18      2023-03-24       2023-03-29
+198:     2023-03-30     2023-03-30      2023-03-30       2023-03-31
+199:     2023-02-22     2023-02-22      2023-02-22       2023-02-22
+200:     2023-03-06     2023-03-06      2023-03-06       2023-03-08
+     diff_created_trip diff_created_ireq diff_created_irr_disp time_kapsch
+  1:                 0                 0                     5           0
+  2:                 2                 2                     3           2
+  3:                 1                 1                     1           1
+  4:                 2                 3                     3           2
+  5:                 0                 0                     0           0
+ ---                                                                      
+196:                 1                 1                     4           1
+197:                 1                 7                    12           1
+198:                 1                 1                     2           1
+199:                 1                 1                     1           1
+200:                 0                 0                     2           0
+     time_etan time_qfree queried_at trip_count  id
+  1:         0          5 2023-04-03         39   1
+  2:         0          1 2023-04-03         42   2
+  3:         0          0 2023-04-03        103   3
+  4:         1          0 2023-04-03       4003   4
+  5:         0          0 2023-04-03          4   5
+ ---                                               
+196:         0          3 2023-04-03       1467 196
+197:         6          5 2023-04-03          3 197
+198:         0          1 2023-04-03          1 198
+199:         0          0 2023-04-03         60 199
+200:         0          2 2023-04-03          4 200</code></pre>
+</details>
+</div>
+<div id="yolo" class="section level2">
+<h2>Rejected Trips Status</h2>
+<p>This section details the status of the trip image review process.
+Trips in the <code>image review request table</code> but not in the
+<code>image review ir_results table</code> have yet to be processed by
+QFREE and do not have a disposition associated with it.</p>
+</div>
+<div id="current-status" class="section level2 tabset">
+<h2 class="tabset">Current Status</h2>
+<div id="total-all-dispositions" class="section level3">
+<h3>Total (All Dispositions)</h3>
+<div id="htmlwidget-9c961c3508a6c08d14c6" style="width:900px;height:540px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9c961c3508a6c08d14c6">{"x":{"visdat":{"96ec3dc3301e":["function () ","plotlyVisDat"]},"cur_data":"96ec3dc3301e","attrs":{"96ec3dc3301e":{"x":{},"y":{},"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"updatemenus":[{"active":0,"type":"dropdown","direction":"right","xanchor":"left","yanchor":"top","x":-0.1,"y":1.2,"buttons":[{"method":"restyle","args":["transforms[0].value","count"],"label":"count"},{"method":"restyle","args":["transforms[0].value","percent"],"label":"percent"}]}],"barmode":"stack","yaxis":{"domain":[0,1],"automargin":true,"title":"Trip Count"},"xaxis":{"domain":[0,1],"automargin":true,"title":"trip_date"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2023-02-17","2023-02-17","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-24","2023-02-24","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-07","2023-03-07","2023-03-14","2023-03-14","2023-03-16","2023-03-16","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31","2023-04-01","2023-04-01","2023-04-02","2023-04-02"],"y":[1,0,1,0,1,0,4,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,10,0,29,0,41,0,36,0,32,0,10411,0.16,27423,0.37,30150,0.39,29541,0.38,27437,0.44,22621,0.44,6605,0.4],"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-17","2023-02-18","2023-02-18","2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-26","2023-03-26"],"y":[23,0,4,0,7,0,16,0,16,0,11,0,14,0,13,0,4,0,4,0,13,0,11,0,13,0,10,0,7,0,2,0,5,0,15,0,17,0,17,0,14,0,11,0,4,0,4,0,9,0,8,0,10,0,21,0,20,0,10,0,4,0,9,0,13,0,13,0,1,0,2,0,1,0],"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","name":"19-CONFIRMED","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-17","2023-02-18","2023-02-18","2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31","2023-04-01","2023-04-01","2023-04-02","2023-04-02"],"y":[71682,0.94,44746,0.93,33671,0.92,49103,0.93,61514,0.94,57835,0.93,62019,0.93,63623,0.94,26104,0.93,18983,0.92,54626,0.93,62389,0.93,67339,0.94,70850,0.94,69516,0.94,46287,0.93,38801,0.93,57473,0.94,67506,0.93,69639,0.94,68966,0.94,67064,0.94,41562,0.93,32318,0.92,55106,0.93,65850,0.94,69544,0.94,72814,0.94,73768,0.94,50298,0.93,35374,0.93,57083,0.93,65953,0.93,71340,0.93,70897,0.94,69309,0.93,54745,0.93,40706,0.93,51356,0.78,41865,0.57,43307,0.56,43467,0.57,33720,0.54,28399,0.56,9972,0.6],"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","name":"20-IDENTIFIED","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-17","2023-02-18","2023-02-18","2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31","2023-04-01","2023-04-01"],"y":[4699,0.06,3471,0.07,2779,0.08,3807,0.07,4177,0.06,4149,0.07,4528,0.07,4288,0.06,2031,0.07,1573,0.08,3814,0.07,4449,0.07,4643,0.06,4809,0.06,4502,0.06,3652,0.07,3029,0.07,3841,0.06,4689,0.06,4622,0.06,4582,0.06,4374,0.06,3342,0.07,2830,0.08,4224,0.07,4359,0.06,4534,0.06,4757,0.06,4955,0.06,3927,0.07,2829,0.07,4330,0.07,4809,0.07,5088,0.07,4601,0.06,4845,0.07,4060,0.07,3143,0.07,3993,0.06,4139,0.06,4151,0.05,3923,0.05,1233,0.02,25,0],"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","name":"24-REJECTED_UNREADABLE","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="by-roadway-type-24-only" class="section level3">
+<h3>By Roadway (Type-24 Only)</h3>
+<div id="htmlwidget-293ef2c78354ab808ade" style="width:900px;height:720px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-293ef2c78354ab808ade">{"x":{"data":[{"x":["2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29"],"y":[155,0.04,119,0.03,91,0.02,124,0.03,146,0.03,98,0.03,100,0.02,144,0.03,159,0.03,119,0.03,117,0.03,127,0.03,117,0.03,77,0.02,40,0.01,102,0.02,168,0.04,161,0.04,197,0.04,244,0.05,157,0.04,257,0.05,354,0.07,141,0.03,128,0.03,171,0.04,77,0.02,1,0],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29"],"y":[229,0.06,205,0.05,136,0.03,107,0.02,144,0.03,78,0.02,109,0.02,170,0.04,160,0.03,145,0.03,122,0.03,142,0.03,149,0.03,91,0.02,51,0.01,91,0.02,130,0.03,149,0.03,163,0.03,192,0.04,125,0.03,217,0.05,240,0.05,180,0.04,156,0.03,90,0.02,80,0.02,11,0],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31"],"y":[574,0.21,668,0.18,769,0.18,810,0.2,825,0.18,737,0.17,3,0,14,0.01,719,0.19,849,0.19,833,0.18,862,0.18,823,0.18,766,0.21,680,0.22,705,0.18,866,0.18,797,0.17,846,0.18,854,0.2,711,0.21,592,0.21,853,0.2,791,0.18,862,0.19,862,0.18,880,0.18,766,0.2,618,0.22,803,0.19,810,0.17,837,0.16,789,0.17,872,0.18,772,0.19,729,0.23,713,0.18,728,0.18,785,0.19,719,0.18,61,0.05],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":true,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31"],"y":[674,0.24,809,0.21,874,0.21,930,0.22,985,0.22,909,0.21,3,0,13,0.01,794,0.21,1119,0.25,919,0.2,993,0.21,973,0.22,895,0.25,744,0.25,773,0.2,945,0.2,930,0.2,911,0.2,941,0.22,783,0.23,728,0.26,873,0.21,889,0.2,925,0.2,938,0.2,1041,0.21,768,0.2,642,0.23,869,0.2,916,0.19,928,0.18,879,0.19,1056,0.22,941,0.23,761,0.24,833,0.21,890,0.22,862,0.21,823,0.21,76,0.06],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y4","frame":null},{"x":["2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31"],"y":[335,0.12,368,0.1,562,0.13,490,0.12,567,0.13,503,0.12,524,0.26,402,0.26,558,0.15,553,0.12,675,0.15,654,0.14,587,0.13,512,0.14,418,0.14,503,0.13,697,0.15,646,0.14,654,0.14,589,0.13,411,0.12,323,0.11,543,0.13,583,0.13,613,0.14,619,0.13,603,0.12,730,0.19,375,0.13,529,0.12,600,0.12,688,0.14,614,0.13,647,0.13,774,0.19,389,0.12,499,0.12,587,0.14,648,0.16,626,0.16,73,0.06],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y5","frame":null},{"x":["2023-02-18","2023-02-18","2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31"],"y":[498,0.14,378,0.14,458,0.12,603,0.14,539,0.13,645,0.14,628,0.15,523,0.26,428,0.27,556,0.15,603,0.14,691,0.15,750,0.16,662,0.15,519,0.14,418,0.14,524,0.14,707,0.15,676,0.15,745,0.16,728,0.17,448,0.13,312,0.11,548,0.13,617,0.14,636,0.14,636,0.13,776,0.16,607,0.15,382,0.14,590,0.14,713,0.15,751,0.15,678,0.15,742,0.15,593,0.15,427,0.14,556,0.14,617,0.15,679,0.16,619,0.16,63,0.05],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"xaxis":"x","yaxis":"y6","frame":null},{"x":["2023-02-18","2023-02-18","2023-02-19","2023-02-19","2023-02-20","2023-02-20","2023-02-21","2023-02-21","2023-02-22","2023-02-22","2023-02-23","2023-02-23","2023-02-24","2023-02-24","2023-02-25","2023-02-25","2023-02-26","2023-02-26","2023-02-27","2023-02-27","2023-02-28","2023-02-28","2023-03-01","2023-03-01","2023-03-02","2023-03-02","2023-03-03","2023-03-03","2023-03-04","2023-03-04","2023-03-05","2023-03-05","2023-03-06","2023-03-06","2023-03-07","2023-03-07","2023-03-08","2023-03-08","2023-03-09","2023-03-09","2023-03-10","2023-03-10","2023-03-11","2023-03-11","2023-03-12","2023-03-12","2023-03-13","2023-03-13","2023-03-14","2023-03-14","2023-03-15","2023-03-15","2023-03-16","2023-03-16","2023-03-17","2023-03-17","2023-03-18","2023-03-18","2023-03-19","2023-03-19","2023-03-20","2023-03-20","2023-03-21","2023-03-21","2023-03-22","2023-03-22","2023-03-23","2023-03-23","2023-03-24","2023-03-24","2023-03-25","2023-03-25","2023-03-26","2023-03-26","2023-03-27","2023-03-27","2023-03-28","2023-03-28","2023-03-29","2023-03-29","2023-03-30","2023-03-30","2023-03-31","2023-03-31","2023-04-01","2023-04-01"],"y":[1001,0.29,818,0.29,1120,0.29,1045,0.25,1153,0.28,1275,0.28,1221,0.28,978,0.48,716,0.46,1011,0.27,1116,0.25,1211,0.26,1231,0.26,1193,0.26,960,0.26,769,0.25,1097,0.29,1205,0.26,1307,0.28,1258,0.27,1171,0.27,989,0.3,875,0.31,1214,0.29,1181,0.27,1188,0.26,1342,0.28,1219,0.25,1056,0.27,812,0.29,1257,0.29,1296,0.27,1290,0.25,1320,0.29,1244,0.26,980,0.24,837,0.27,1131,0.28,1160,0.28,1165,0.28,1136,0.29,960,0.78,25,1],"legendgroup":"24-REJECTED_UNREADABLE","showlegend":false,"transforms":[{"type":"filter","target":["count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent","count","percent"],"operation":"=","value":"count"}],"type":"bar","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"xaxis":"x","yaxis":"y7","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"title":"trip_date","anchor":"y7"},"yaxis7":{"domain":[0,0.132857142857143],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> TNB <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis6":{"domain":[0.152857142857143,0.275714285714286],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 99S <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis5":{"domain":[0.295714285714286,0.418571428571429],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 99N <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis4":{"domain":[0.438571428571429,0.561428571428571],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 520W <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis3":{"domain":[0.581428571428571,0.704285714285714],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 520E <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis2":{"domain":[0.724285714285714,0.847142857142857],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 405LB <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis":{"domain":[0.867142857142857,1],"automargin":true,"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 405BL <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"updatemenus":[{"active":0,"type":"dropdown","direction":"right","xanchor":"left","yanchor":"top","x":-0.1,"y":1.2,"buttons":[{"method":"restyle","args":["transforms[0].value","count"],"label":"count"},{"method":"restyle","args":["transforms[0].value","percent"],"label":"percent"}]}],"barmode":"stack","hovermode":"closest","showlegend":false},"attrs":{"96ec4ddb3b29":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec84152f6":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec31ac65fb":{"x":{},"y":{},"legendgroup":{},"showlegend":[[true]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec694646f1":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec43ef3a48":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec7c6d2e5":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"96ec3a4c4e09":{"x":{},"y":{},"legendgroup":{},"showlegend":[[false]],"transforms":[{"type":"filter","target":{},"operation":"=","value":"count"}],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+</div>
+<div id="plate-rejection-rates" class="section level2 tabset">
+<h2 class="tabset">Plate Rejection Rates:</h2>
+<div id="by-completion-date" class="section level3">
+<h3>By Completion Date</h3>
+<div id="htmlwidget-04eb49f05e78c430ce99" style="width:900px;height:540px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-04eb49f05e78c430ce99">{"x":{"visdat":{"96ec36525abe":["function () ","plotlyVisDat"]},"cur_data":"96ec36525abe","attrs":{"96ec36525abe":{"x":{},"y":{},"mode":"line","showlegend":true,"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count (trips rejected)"},"xaxis":{"domain":[0,1],"automargin":true,"title":"created_irr_disp"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[869,9830,3781,3555,4304,4101,7960,3180,4518,3767,5284,2352,8950,4093,5012,3907,3907,2528,5486,1801,2167,871,325,3850,15984,9459,4163,5166,4691,9527,5923,8223,5717,1375,3979],"mode":"line","showlegend":true,"type":"scatter","name":"Count","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-20","2023-03-21","2023-03-22","2023-03-23"],"y":[4753.14285714286,5049.07142857143,4626,4635,4561.64285714286,4646.07142857143,4481.78571428571,4068,3903.07142857143,3603.57142857143,3609.5,4373.78571428571,4881.42857142857,4539.5,4616.14285714286,4593.21428571429,4994.64285714286,5138.64285714286,5545.42857142857,5561.92857142857,5531.5,5660.92857142857],"mode":"line","showlegend":true,"type":"scatter","name":"Rolling 2<br />Week Avg.","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="days-to-reject-total-agg." class="section level3">
+<h3>Days to Reject (total agg.)</h3>
+<div id="htmlwidget-8cd162b8442c15e25fd7" style="width:900px;height:540px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8cd162b8442c15e25fd7">{"x":{"visdat":{"96ec56a76555":["function () ","plotlyVisDat"]},"cur_data":"96ec56a76555","attrs":{"96ec56a76555":{"x":{},"y":{},"mode":"lines","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"showlegend":true,"yaxis":{"domain":[0,1],"automargin":true,"title":"Days","range":[0,7]},"xaxis":{"domain":[0,1],"automargin":true,"title":"trip_date"},"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[3,2,1,1,2,2,3,3,2,1,1,1,1,1,3,2,1,1,1,1.94999999999982,3,3,2,2,3,4,4,4,4,3,2,3,7,4,5,5,4,3,2,1,1,1,1,0],"mode":"lines","type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[1.60204298786976,1.33218092768655,0.540122346167686,0.294720252167061,0.42662197749581,0.382742829597493,0.451413427561837,1.0839552238806,1.54455933037912,0.513668150031786,0.156004195070792,0.157563497415149,0.291191040275684,0.280723643169058,0.959573522878721,1.07420591456736,0.484978540772532,0.235615725071596,0.201748773725741,0.413024664647339,0.695766041030118,0.649519890260631,0.535906642728905,1.02014134275618,1.20336174242424,1.61298462950218,1.81318923687693,1.93903720832457,1.94692230070636,1.18258212375859,0.948038176033934,0.553810623556582,1.18111873570389,0.783608490566038,0.988480765051076,1.9921568627451,1.87832512315271,1.18549156856507,0.638367142499374,0.371104131432713,0.189351963382318,0.741014529696661,0.81021897810219,0],"mode":"lines","type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[2,1,1,0,0,0,0,1,2,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,2,2,2,2,1,1,0,0,0,0,2,2,1,1,0,0,1,1,0],"mode":"lines","type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="days-to-reject-by-roadway" class="section level3">
+<h3>Days to Reject (by roadway)</h3>
+<div id="htmlwidget-2903b984c7766f4bd6d8" style="width:900px;height:540px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2903b984c7766f4bd6d8">{"x":{"data":[{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[2,3.29999999999998,3,3,2,2,1,1,1,3,3,1,1,1,1,4,3,3,3,2,3,3,5,4,3,2,1,1,0],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[0.401574803149606,1.24516129032258,1.63025210084034,1.79120879120879,0.879032258064516,0.746575342465753,0.244897959183673,0.1,0.611111111111111,0.811320754716981,1.19327731092437,0.367521367521368,0.52755905511811,0.153846153846154,0.623376623376623,1.65,1.91176470588235,1.98214285714286,1.27950310559006,0.817258883248731,1.44262295081967,0.987261146496815,3.08560311284047,2.65819209039548,1.05673758865248,0.453125,0.485380116959064,0.350649350649351,0],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[0,1,2,2,1,1,0,0,1,0,1,0,1,0,1,1,2,2,1,1,1,1,3,2,1,0,0,0,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[2,3,3,3,2,1.84999999999999,1,1,1,3,3,1,1,0,1,4,3,3,2,2,3,2.59999999999999,5,4,4,2,1,1,0],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[0.372670807453416,1.16593886462882,1.45365853658537,1.67647058823529,1.06542056074766,0.583333333333333,0.115384615384615,0.192660550458716,0.8,0.3,1.51034482758621,0.336065573770492,0.0915492957746479,0.228187919463087,0.571428571428571,1.82352941176471,1.61538461538462,1.86923076923077,1.28859060402685,0.871165644171779,1.109375,1.08,1.90322580645161,2.67083333333333,1.53333333333333,0.224358974358974,0.188888888888889,0.1625,0],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["2023-02-17","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29"],"y":[0,1,2,2,1,0,0,0,1,0,2,0,0,0,1,1,2,2,1,1,1,1,3,2,1,0,0,0,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,1,1,1,1,3,2,0,0,1,1,1,1,2,1,1,1,1,2,3,2,1,2,3,3,4,2,2,2,2,1.89999999999998,7,1,5,4,3,2,2,1,1,1,1],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[1.97163120567376,0.99002849002849,0.36411149825784,0.206586826347305,0.596879063719116,0.316049382716049,0.686060606060606,0.849389416553596,0,0,0.212795549374131,0.175500588928151,0.404561824729892,0.233178654292343,1.24908869987849,1.0065274151436,0.273529411764706,0.24113475177305,0.144341801385681,0.530740276035132,0.814420803782506,0.802107728337237,0.282700421940928,0.883445945945946,1.39390386869871,2.02275600505689,2.31786542923434,1.37935034802784,1.42272727272727,0.711488250652741,0.844660194174757,0.489414694894147,0.901234567901235,0.542413381123059,1.43219264892269,2.3704128440367,1.57512953367876,0.902606310013717,0.908835904628331,0.445054945054945,0.206369426751592,0.899860917941586,0.131147540983607],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,1,0,0,1,1,2,2,1,1,1,1,0,0,0,0,2,1,0,1,0,0,1,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,1,1,1,1,3,2,0,0,1,1,1,1,3,1,1,1,1,4.54999999999995,3,2,1,3,3,4,4,2,2,2,2,1,7,1,5,4,3,2,2,1,1,1,0.25],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y4","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[1.95703125,0.975278121137206,0.385756676557863,0.224969097651422,0.534324942791762,0.283870967741935,0.788832487309645,0.778877887788779,0,0,0.22544080604534,0.190348525469169,0.390642002176279,0.259818731117825,1.31346351490236,1.01005586592179,0.252688172043011,0.245795601552393,0.180952380952381,0.637634408602151,0.807903402854007,0.730074388947928,0.231162196679438,1.15659340659341,1.47308132875143,2.00562429696288,2.28,1.43710021321962,1.43996157540826,0.73828125,0.806853582554517,0.495972382048331,0.888646288209607,0.561422413793103,1.55176336746303,2.31344696969697,1.59511158342189,0.923784494086728,0.891956782713085,0.413483146067416,0.213457076566125,0.92588092345079,0.0526315789473684],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y4","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,1,0,0,1,2,2,2,1,1,1,1,0,0,0,0,2,1,0,1,0,0,1,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y4","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[3,2,1,1,1,1,1,3.89999999999998,2,1,1,1,1,1,3,2,1,1,1,2,3,3,1,3,4,4,4,3,3,2,2,2,7,1,5,5,3.34999999999991,3,1,2,1,1,1],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y5","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[1.9951690821256,1.11496746203905,0.259701492537313,0.119565217391304,0.140569395017794,0.238775510204082,0.195767195767196,2.12524850894632,1.09923664122137,0.0995024875621891,0.0985663082437276,0.104882459312839,0.18962962962963,0.212538226299694,0.918228279386712,1.16796875,0.318181818181818,0.190854870775348,0.176470588235294,0.377708978328173,0.668195718654434,0.356536502546689,0.491484184914842,1.09907120743034,1.86003683241252,2.24185248713551,2.76019575856444,2.47819063004847,1.67993366500829,0.815068493150685,0.773333333333333,0.52930056710775,1.76833333333333,0.505813953488372,0.708469055374593,2.33539412673879,1.88242894056848,1.39074550128535,0.619238476953908,0.44633730834753,0.191358024691358,0.953674121405751,0.26027397260274],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y5","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,0,0,0,0,0,2,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,2,2,3,2,1,1,1,0,1,0,0,2,2,2,1,0,0,1,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y5","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[3,2,1,1,1,1,3,3,2,1,1,1,1,1,3,3,1,1,1,6,3,3,1,3,4,4,4,3,3,3,2,2.54999999999995,7,6,5,5,4,3,2,2,1,1,1],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y6","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2.04874651810585,1.14859437751004,0.272486772486772,0.139737991266376,0.159203980099502,0.207792207792208,0.248062015503876,2.13057324840764,1.1395793499044,0.14018691588785,0.143884892086331,0.104477611940299,0.186685962373372,0.258666666666667,1.21601208459214,1.24277456647399,0.332535885167464,0.177480916030534,0.142857142857143,0.517751479289941,0.754362416107383,0.468406593406593,0.479910714285714,1.32051282051282,1.80656934306569,2.60615883306321,2.74685534591195,2.52987421383648,1.79123711340206,0.960461285008237,0.827225130890052,0.627118644067797,1.81767180925666,0.548601864181092,0.650442477876106,2.44070080862534,1.92580101180438,1.38173302107728,0.766187050359712,0.520259319286872,0.101620029455081,0.953150242326333,0.507936507936508],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y6","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31"],"y":[2,1,0,0,0,0,0,2,1,0,0,0,0,0,2,1,0,0,0,0,1,0,0,1,2,3,3,3,2,1,1,0,1,0,0,2,2,2,1,0,0,1,1],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y6","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[3,3,2,1,1,1,1,3,2,1,1,1,1,1,2.39999999999986,2,2,2,1,1,4,3,2,1,1,1,1,5,5,3,2.44999999999993,3,3,5,5,5,4,5,3,1,1,2,1,0],"legendgroup":"95th<br />Percentile","mode":"lines","showlegend":false,"type":"scatter","name":"95th<br />Percentile","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y7","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[0.861064891846922,2.05194805194805,1.02933985330073,0.208928571428571,0.180861244019139,0.388551604509974,0.162352941176471,0.584766584766585,2.00920245398773,0.988826815642458,0.0939663699307616,0.167562724014337,0.144508670520231,0.309504467912266,0.259010896898575,1.046875,1.0702210663199,0.247948951686418,0.287136929460581,0.188982402448355,0.527821939586645,0.648163962425278,1.00303336703741,0.862857142857143,0.219110378912685,0.132938187976291,0.233164983164983,2.4150521609538,3.22231337161608,2.22916666666667,1.27586206896552,0.504375497215593,0.44212962962963,0.51937984496124,0.570454545454545,1.38826366559486,2.35714285714286,1.47431302270012,0.285587975243148,0.19051724137931,0.212017167381974,0.273767605633803,0.975,0],"legendgroup":"Average","mode":"lines","showlegend":false,"type":"scatter","name":"Average","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y7","frame":null},{"x":["2023-02-17","2023-02-18","2023-02-19","2023-02-20","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-25","2023-02-26","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-04","2023-03-05","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-11","2023-03-12","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-18","2023-03-19","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-25","2023-03-26","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-01"],"y":[0,2,1,0,0,0,0,0,2,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,4,3,2,1,0,0,0,0,0,2,1,0,0,0,0,1,0],"legendgroup":"Median","mode":"lines","showlegend":false,"type":"scatter","name":"Median","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y7","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"title":"trip_date","anchor":"y7"},"yaxis7":{"domain":[0,0.132857142857143],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> TNB <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis6":{"domain":[0.152857142857143,0.275714285714286],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 99S <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis5":{"domain":[0.295714285714286,0.418571428571429],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 99N <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis4":{"domain":[0.438571428571429,0.561428571428571],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 520W <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis3":{"domain":[0.581428571428571,0.704285714285714],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 520E <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis2":{"domain":[0.724285714285714,0.847142857142857],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 405LB <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"yaxis":{"domain":[0.867142857142857,1],"automargin":true,"range":[0,7.7],"title":"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> 405BL <\/b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"attrs":{"96ec4dac715a":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec69d62619":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec401537ff":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec47905411":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec68bb22c":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec686430d5":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"96ec30144895":{"x":{},"y":{},"legendgroup":{},"mode":"lines","showlegend":[[false]],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="section-1" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+<!--end-->
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] targets_0.13.5    gauntlet_0.1.0    kableExtra_1.3.4  here_1.0.1       
+ [5] crosstalk_1.2.0   lubridate_1.8.0   DT_0.23           data.table_1.14.0
+ [9] plotly_4.10.0     forcats_0.5.1     stringr_1.4.0     dplyr_1.0.9      
+[13] purrr_0.3.4       readr_2.1.2       tidyr_1.2.0       tibble_3.1.7     
+[17] ggplot2_3.3.6     tidyverse_1.3.2   magrittr_2.0.1   
+
+loaded via a namespace (and not attached):
+ [1] googledrive_2.0.0   colorspace_2.0-3    ellipsis_0.3.2     
+ [4] class_7.3-19        rprojroot_2.0.3     fs_1.5.2           
+ [7] gld_2.6.4           rstudioapi_0.14     proxy_0.4-26       
+[10] farver_2.1.1        fansi_0.5.0         mvtnorm_1.1-3      
+[13] xml2_1.3.3          codetools_0.2-18    rootSolve_1.8.2.3  
+[16] knitr_1.39          jsonlite_1.7.2      workflowr_1.7.0    
+[19] broom_0.8.0         dbplyr_2.2.1        compiler_4.1.0     
+[22] httr_1.4.4          backports_1.4.1     assertthat_0.2.1   
+[25] Matrix_1.4-1        fastmap_1.1.0       lazyeval_0.2.2     
+[28] gargle_1.2.1        cli_3.3.0           later_1.3.0        
+[31] htmltools_0.5.2     tools_4.1.0         igraph_1.3.1       
+[34] gtable_0.3.1        glue_1.6.2          lmom_2.9           
+[37] Rcpp_1.0.7          cellranger_1.1.0    jquerylib_0.1.4    
+[40] vctrs_0.4.1         svglite_2.0.0       xfun_0.31          
+[43] ps_1.7.0            rvest_1.0.3         lifecycle_1.0.3    
+[46] googlesheets4_1.0.0 MASS_7.3-57         zoo_1.8-10         
+[49] scales_1.2.1        hms_1.1.2           promises_1.2.0.1   
+[52] expm_0.999-6        RColorBrewer_1.1-3  yaml_2.3.5         
+[55] Exact_3.1           sass_0.4.1          stringi_1.7.4      
+[58] e1071_1.7-9         boot_1.3-28         rlang_1.0.6        
+[61] pkgconfig_2.0.3     systemfonts_1.0.3   evaluate_0.15      
+[64] lattice_0.20-44     htmlwidgets_1.5.4   tidyselect_1.2.0   
+[67] processx_3.6.0      R6_2.5.1            DescTools_0.99.45  
+[70] generics_0.1.3      base64url_1.4       DBI_1.1.3          
+[73] pillar_1.8.1        haven_2.5.0         withr_2.5.0        
+[76] modelr_0.1.8        crayon_1.5.1        utf8_1.2.2         
+[79] tzdb_0.3.0          rmarkdown_2.14      grid_4.1.0         
+[82] readxl_1.3.1        callr_3.7.0         git2r_0.30.1       
+[85] reprex_2.0.1        digest_0.6.27       webshot_0.5.3      
+[88] httpuv_1.6.2        munsell_0.5.0       viridisLite_0.4.1  
+[91] bslib_0.3.1        </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

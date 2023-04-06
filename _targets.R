@@ -30,16 +30,27 @@ tar_source()
 
 # Replace the target list below with your own:
 list(
-  tar_target(
-    name = data,
-    command = tibble(x = rnorm(100), y = rnorm(100))
-    #   format = "feather" # efficient storage of large data frames # nolint
-  )
-  ,tar_target(
-    name = model,
-    command = coefficients(lm(y ~ x, data = data))
-  )
-  ,tar_render(temp_analysis, "analysis/temp_analysis.rmd")
+  #image_download_queue report==================================================================
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##data processing====
+  tar_target(file_imgdlq, here("data", "data_image_dl_queue.csv"), format = "file")
+  ,tar_target(file_index_imgdl_queue_tllsts, here("data", "index_imgdl_queue_tllsts.csv"), format = "file")
+  ,tar_target(file_index_imgdl_queue_rdsd, here("data", "index_imgdl_queue_rdsd.csv"), format = "file")
+  ,tar_target(data_imgdlq, make_image_dl_queue(
+    file_imgdlq
+    ,file_index_imgdl_queue_tllsts
+    ,file_index_imgdl_queue_rdsd))
+  ,tar_target(data_imgdlq_crrnt, make_imgdlq_crrnt(data_imgdlq))
+  ,tar_target(data_imgdlq_agg, make_imgdlq_agg(data_imgdlq))
+  ,tar_target(data_tollsts_ts_rdwy
+              ,make_tollsts_ts(data_imgdlq
+                               ,grp_agg = c("queried_at", "roadway", "rdsd_desc", "tsc_desc")
+                               ,grp_lag = c("roadway", "rdsd_desc", "tsc_desc")))
+  ,tar_target(data_tollsts_ts
+              ,make_tollsts_ts(data_imgdlq
+                               ,grp_agg = c("queried_at", "rdsd_desc", "tsc_desc")
+                               ,grp_lag = c("rdsd_desc", "tsc_desc")))
+  ,tar_target(data_agg_data_ts, make_agg_data_ts(data_imgdlq))
   #icrs report==================================================================
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ##data processing====

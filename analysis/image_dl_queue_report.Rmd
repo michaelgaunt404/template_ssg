@@ -1,0 +1,501 @@
+---
+title: "Image Download Backlog"
+subtitle: "Monitoring image download queues."
+author: "Mike Gaunt & Kara Todd"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, cache.lazy = FALSE, autodep = TRUE, warning = FALSE, 
+  message = FALSE, echo = TRUE, dpi = 180,
+  fig.width = 5, fig.height = 3, echo = FALSE
+  )
+```
+
+<!--#general comments===========================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This is [[insert description here - what it does/solve]]
+#
+# By: mike gaunt, michael.gaunt@wsp.com
+#
+# README: [[insert brief readme here]]
+#-------- [[insert brief readme here]]
+#
+# *please use 80 character margins
+# *please go to https://pkgs.rstudio.com/flexdashboard/articles/layouts.html
+# to explore the different layouts available for the flexdashboard framework
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!--#library set-up=============================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{r library_import}
+library(targets)
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(plotly)
+library(crosstalk)
+library(janitor)
+library(here)
+library(knitr)
+library(gauntlet)
+library(reactable)
+```
+
+<!--#source helpers/utilities===================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{r}
+# source(here::here("code/helpers_DT.r"))
+```
+
+<!--#source data================================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev 
+#area to upload data with and to perform initial munging
+#please add test data here so that others may use/unit test these scripts -->
+```{r mychunk}
+tar_load(data_imgdlq)
+tar_load(data_imgdlq_crrnt)
+tar_load(data_imgdlq_agg)
+tar_load(data_tollsts_ts_rdwy)
+tar_load(data_tollsts_ts)
+tar_load(data_agg_data_ts)
+```
+
+## Intro
+
+This report monitors and details the state of the image download process This report is comprised of multiple visualizations intended to describe the current image download queue 
+
+This document is under development and will act as a report as well as a template that will be used for reoccurring analyses.
+
+The data used for this analysis extends from ``r  min(data_imgdlq_crrnt$trip_date)`` to ``r  max(data_imgdlq_crrnt$trip_date)``.    
+It was queried on .
+
+## Data Overview {#data}
+
+The data used for this report is pre-aggregated count data. The data is aggregated by a number of trip attributes - e.g. when and where the trip occurred, etc. This aggregation was performed to limit the size of the data and make it easier to manage across different platforms.
+
+Description for selected attributes:
+
+<details>
+<summary>Click to Expand</summary>
+
+Grouping Attributes: 
+
++ `date`: which date the count attributes are aggregated with 
++ `roadway`: which roadway the count attributes are aggregated with 
++ `rdsd_desc`: roadside toll type the count attributes are aggregated with  
++ `tsc_desc`: toll status code the count attributes are aggregated with   
+
+Count Attributes: 
+
++ `ttl_requested`: total count of image download requests per grouping  
+  - a single trip usually has multiple download requests
+  - sum  of **ttl_downloaded_t + ttl_nullstatus + ttl_downloaded_f**
++ `ttl_downloaded_t`: total count of successful image download requests that have an image per grouping   
++ `ttl_nullstatus`: total count of image download requests per grouping  
++ `ttl_downloaded_f`: total count of image download requests per grouping  
++ `ttl_yes_dl_image`: number of trips per grouping that has at least one successful image download request
++ `ttl_no_dl_image`: number of trips per grouping that **do not have any successful** image download request
++ `ttl_inLance`: number of trips per grouping that appear both in _lance.TripPassageImageDownloadResponse/Request_ tables and _lance.passageuseableimage_ table
++ `ttl_notinImage`: which roadway the count attributes are aggregated for
++ `count`: number of trips per grouping
+  - sum  of **ttl_yes_dl_image + ttl_no_dl_image**
+  
+Below is a sample of the data for I405 on 2021-11-17.
+
+```{r CHUNK2}
+ data_imgdlq_crrnt %>% 
+  filter(trip_date == as_date("2021-11-17"), 
+         roadway == "I405")  %>%  
+  reactable()
+  # dt_common(y = 200, pl = 1000, dom = "Bftr", pretty = F)
+```
+
+</details> 
+
+
+## SQL Query
+
+Query uses the following tables to describe download issue:  
+
++ `rtoll.toll/toll_status`: to define when/where trip occurred and its status  
++ `qfree.imagereviewrequest/result`: to define image review request status for Type-1 trips  
+ - these tables are currently used to monitor image review request process in a separate report   
++ `lance.TripPassageImageDownloadResponse/Request`: to define download status   
+  - these tables were found somewhat recently and indicate image download status  
+  - these tables are joined together and then aggregated   
+  - aggregation counts number of successful/unsuccessful/null image request attempts per unique tripPassgeId  
+  - this analysis primarily relies upon these aggregations for backlog quantification  
+
+
+## Photo-Enforced Trips Image Download Queue {#yolo}
+
+This section details image download counts by toll status - specifically, focusing on the *015-PENIMGDWLD* status. Most of the trips are type-1 trips with a very small subset of trips being type-2 transponders. These counts indicate trips that will eventually sent to QFree for IRR. 
+
+Current Backlog by Trip Occurrence Month:
+
+```{r}
+temp = data_imgdlq_crrnt %>%
+  mutate(across(c(rdsd_desc, tsc_desc), as.factor)) %>%
+  group_by(month = floor_date(trip_date, "month"), roadway, rdsd_desc, tsc_desc) %>%
+  summarise(count = sum(count)) %>%
+  pivot_wider(id_cols = c(rdsd_desc, tsc_desc, roadway),
+              names_from = month, values_from = count) %>%
+  rowwise() %>%  
+  mutate(Total = sum(c_across(`2023-02-01`:`2023-03-01`))) %>% 
+  arrange(rdsd_desc, tsc_desc, roadway) 
+```
+### Counts by Trips  {.tabset}
+
+#### Historical Timeseries
+
+The plot below provides a historical account of the total number of photo-enforced trips that do not have downloaded images by roadway at the time the data was queried. The above table details the current total number of photo-enforced trips that do not have downloaded images by roadway.
+
+```{r fig.height = 2, fig.width=5}
+data_tollsts_ts_sh = SharedData$new(data_tollsts_ts)
+
+plot_ttl = data_tollsts_ts_sh %>% 
+  plot_ly(x = ~queried_at, y = ~count, color = ~as.factor(tsc_desc),
+          type = "scatter", mode = "line", showlegend=T
+          ,text = ~text, hoverinfo = "text") %>%  
+  layout(yaxis = list(range=c(0, max(data_imgdlq_agg$count)+.10*max(data_imgdlq_agg$count))
+                      ,title = "Unidentified Plates")) 
+
+bscols(
+  widths = c(12)
+  ,bscols(
+    widths = c(3, 3, 6)
+    ,filter_select("id_rstt", "Roadside Tolltype:", data_tollsts_ts_sh, ~rdsd_desc, multiple = F)
+    )
+  ,plot_ttl
+)
+```
+
+```{r fig.height = 2, fig.width=5}
+data_tollsts_ts_rdwy_sh = SharedData$new(data_tollsts_ts_rdwy)
+
+plot_ttl = data_tollsts_ts_rdwy_sh %>% 
+  plot_ly(x = ~queried_at, y = ~count, color = ~as.factor(roadway),
+          type = "scatter", mode = "line", showlegend=T
+          ,text = ~text, hoverinfo = "text") %>%  
+  layout(yaxis = list(range=c(0, max(data_imgdlq_agg$count)+.10*max(data_imgdlq_agg$count))
+                      ,title = "Unidentified Plates")) 
+
+bscols(
+  widths = c(12)
+  ,bscols(
+    widths = c(3, 3, 6)
+    ,filter_select("id_rstt", "Roadside Tolltype:", data_tollsts_ts_rdwy_sh, ~rdsd_desc, multiple = F)
+    ,filter_select("id_tsc", "Toll Status Code:", data_tollsts_ts_rdwy_sh, ~tsc_desc, multiple = F))
+  ,plot_ttl
+)
+```
+
+#### Current Counts
+
+The visualization below details daily aggregated counts of trips for the different flag_no_dl statuses as derived from the lance tables mention above. 
+
+```{r}
+data_imgdlq_crrnt %>%
+  filter(tsc_desc == "4-Posted") %>%
+  filter(rdsd_desc == "2-Transponder (AVI)") %>%
+  count_percent_zscore(grp_c = c(trip_date, roadway)
+                       ,grp_p = c(trip_date)
+                       ,col = count) %>%
+  group_by(roadway) %>%
+  group_map(~{
+    plot_ly(.x, x=~trip_date, y = ~count, type = "bar"
+    ) %>%
+      layout(yaxis = list(
+        title = paste0(c(rep("&nbsp;", 20),
+                         paste("<b>", as.character(.y), "</b>"),
+                         rep("&nbsp;", 20),
+                         rep("\n&nbsp;", 3)),
+                       collapse = "")))
+  }
+  ) %>%
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = T) %>%
+  layout(showlegend = FALSE,
+         xaxis = plty_make_range_select_buttons())
+```
+
+### {-}
+
+## Image Download Requests
+
+This section details the state of the image download process with the count attributes described in the [Data Overview](#data) above. This section does this in two ways - by reporting counts of image download requests or trips. A single trip will have multiple image download requests, so the total number of image download requests for a given day/roadway will far exceed that of the actual number of trips.
+
+### Counts by Requests {.tabset}
+
+The plots below detail the total number of image download requests per status. 
+
+Status Description: 
+
++ `ttl_downloaded_t`: successful image download requests which have an image associated with them
++ `ttl_downloaded_f`: failed image download requests which do not have an image associated with them
++ `ttl_nullstatus`: image download requests that have a NULL status - neither a failed or successful request
+
+Total Counts:
+```{r}
+data_imgdlq_agg %>%
+  group_by(roadway) %>%  
+  summarise(across(c(ttl_downloaded_t, ttl_downloaded_f, ttl_nullstatus), sum)) %>%  
+  reactable()
+  # dt_common(dom = "t")
+```
+
+
+#### Weekly Aggregate Count
+
+```{r}
+temp = data_imgdlq_agg %>%
+  pivot_longer(cols = c(ttl_downloaded_t, ttl_downloaded_f, ttl_nullstatus),
+               values_to = "count") %>%
+  mutate(trip_date = floor_date(trip_date, "week")) %>% 
+  count_percent_zscore(grp_c = c(roadway, trip_date, name)
+                       ,grp_p = c(trip_date, roadway)
+                       ,col = count, rnd = 2) %>%
+  pivot_longer(cols = c(count, percent), names_to = "var")
+
+temp %>%
+  group_by(roadway) %>%
+  group_map(~{
+    plot_ly(.x, x=~trip_date, y = ~value, color = ~name, legendgroup = ~name, 
+            type = "bar",showlegend = (.y == "99S"),
+            transforms = list(
+              list(type = 'filter', target = ~var, 
+                   operation = '=', value = "count")
+            )) %>%
+      layout(yaxis = list(
+        title = paste0(c(rep("&nbsp;", 20),
+                         paste("<b>", as.character(.y), "</b>"),
+                         rep("&nbsp;", 20),
+                         rep("\n&nbsp;", 3)),
+                       collapse = "")),
+        updatemenus = plty_make_menu_item(name_list = c("count", "percent"), filter_pos = 0,
+                                     direction = "right", x = -.1, y = 1.2),
+        barmode = "stack")
+  }
+  ) %>%
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = T) %>%
+  layout(showlegend = T,
+         xaxis = plty_make_range_select_buttons())
+```
+
+#### Daily Aggregate Count
+```{r}
+temp = data_imgdlq_agg %>%
+  pivot_longer(cols = c(ttl_downloaded_t, ttl_downloaded_f, ttl_nullstatus),
+               values_to = "count") %>%
+  count_percent_zscore(grp_c = c(roadway, trip_date, name)
+                       ,grp_p = c(trip_date, roadway)
+                       ,col = count, rnd = 2) %>%
+  pivot_longer(cols = c(count, percent), names_to = "var")
+
+temp %>%
+  group_by(roadway) %>%
+  group_map(~{
+    plot_ly(.x, x=~trip_date, y = ~value, color = ~name, legendgroup = ~name, 
+            type = "bar",showlegend = (.y == "99S"),
+            transforms = list(
+              list(type = 'filter', target = ~var, 
+                   operation = '=', value = "count")
+            )) %>%
+      layout(yaxis = list(
+        title = paste0(c(rep("&nbsp;", 20),
+                         paste("<b>", as.character(.y), "</b>"),
+                         rep("&nbsp;", 20),
+                         rep("\n&nbsp;", 3)),
+                       collapse = "")),
+        updatemenus = plty_make_menu_item(name_list = c("count", "percent"), filter_pos = 0,
+                                     direction = "right", x = -.1, y = 1.2),
+        barmode = "stack")
+  }
+  ) %>%
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = T) %>%
+  layout(showlegend = T,
+         xaxis = plty_make_range_select_buttons())
+```
+
+### {-}
+
+
+### Counts by Trips  {.tabset}
+
+The plots below detail the counts of trips given their image download request status. 
+
+Status Description: 
+
++ `ttl_no_dl_image`: a given trip has no successful image download request 
+  - this grouping can include trips that only have NULL image download requests 
+    - NULL image download requests can indicate a request that has yet to be fulfilled and not a failed request
+    - it is reasonable to expect NULL requests for recent trips
++ `ttl_yes_dl_image`: a given trip has at least one successful image download request 
+
+Total Counts (current calender year) :
+
+```{r}
+data_imgdlq_agg %>%  
+  filter(trip_date > as_date('2022-01-01')) %>% 
+  rename(count = ttl_no_dl_image) %>%  
+  count_percent_zscore(grp_c = c(roadway)
+                       ,grp_p = c()
+                       ,col = count
+                       ,rnd = 2)  %>% 
+  reactable()
+  # dt_common(dom = "t")
+```
+
+#### Historical Timeseries
+
+The plot below provides a historical account of the total number of trips without downloaded images by roadway at the time the data was queried. The above table details the current total number of trips without downloaded images by roadway. 
+
+```{r fig.height = 2, fig.width=5}
+temp = data_agg_data_ts %>% 
+  filter(metric == "ttl_no_dl_image") 
+
+plot_ttl = temp %>% 
+  plot_ly(x = ~queried_at, y = ~count, color = ~as.factor(roadway),
+          type = "scatter", mode = "line", showlegend=T, text = ~text, hoverinfo = "text") %>%  
+  layout(yaxis = list(range=c(0, max(temp$count)+.10*max(temp$count))
+                      ,title = "Unidentified Plates")
+         ,xaxis = list(
+           title = "Query Date"
+           ,rangeselector = list(
+             buttons = list(
+               list(count = 1, label = "1 mo", step = "month", stepmode = "backward"),
+               list(count = 1, label = "YTD", step = "year", stepmode = "todate"),
+               list(step = "all")
+             )))
+  ) 
+
+plot_ttl
+```
+
+#### Weekly Aggregate Count
+
+```{r}
+temp = data_imgdlq_agg %>%
+  pivot_longer(cols = c(ttl_yes_dl_image, ttl_no_dl_image),
+               values_to = "count") %>%
+  mutate(trip_date = floor_date(trip_date, "week")) %>% 
+  count_percent_zscore(grp_c = c(roadway, trip_date, name),
+                       grp_p = c(trip_date, roadway)
+                       ,col = count, rnd = 2) %>%
+  pivot_longer(cols = c(count, percent), names_to = "var")
+
+temp %>%
+  group_by(roadway) %>%
+  group_map(~{
+    plot_ly(.x, x=~trip_date, y = ~value, color = ~name, legendgroup = ~name, 
+            type = "bar",showlegend = (.y == "99S"),
+            transforms = list(
+              list(type = 'filter', target = ~var, 
+                   operation = '=', value = "count")
+            )) %>%
+      layout(yaxis = list(
+        title = paste0(c(rep("&nbsp;", 20),
+                         paste("<b>", as.character(.y), "</b>"),
+                         rep("&nbsp;", 20),
+                         rep("\n&nbsp;", 3)),
+                       collapse = "")),
+        updatemenus = plty_make_menu_item(name_list = c("count", "percent"), filter_pos = 0,
+                                     direction = "right", x = -.1, y = 1.2),
+        barmode = "stack")
+  }
+  ) %>%
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = T) %>%
+  layout(showlegend = T,
+         xaxis = plty_make_range_select_buttons())
+```
+
+#### Daily Aggregate Count
+```{r}
+# temp %>%  
+#   filter(var == "count", name == "ttl_no_dl_image", date > as_date('2022-01-01')) %>% 
+#   rename(count = value) %>% 
+#   count_percent_zscore(grp_c = c(roadway), grp_p = c(), rnd = 2)
+
+temp = data_imgdlq_agg %>%
+  pivot_longer(cols = c(ttl_yes_dl_image, ttl_no_dl_image),
+               values_to = "count") %>%
+  count_percent_zscore(grp_c = c(roadway, trip_date, name),
+                       grp_p = c(trip_date, roadway)
+                       ,col = count, rnd = 2) %>%
+  pivot_longer(cols = c(count, percent), names_to = "var")
+
+temp %>%
+  group_by(roadway) %>%
+  group_map(~{
+    plot_ly(.x, x=~trip_date, y = ~value, color = ~name, legendgroup = ~name, 
+            type = "bar",showlegend = (.y == "99S"),
+            transforms = list(
+              list(type = 'filter', target = ~var, 
+                   operation = '=', value = "count")
+            )) %>%
+      layout(yaxis = list(
+        title = paste0(c(rep("&nbsp;", 20),
+                         paste("<b>", as.character(.y), "</b>"),
+                         rep("&nbsp;", 20),
+                         rep("\n&nbsp;", 3)),
+                       collapse = "")),
+        updatemenus = plty_make_menu_item(name_list = c("count", "percent"), filter_pos = 0,
+                                     direction = "right", x = -.1, y = 1.2),
+        barmode = "stack")
+  }
+  ) %>%
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = T) %>%
+  layout(showlegend = T,
+         xaxis = plty_make_range_select_buttons())
+```
+
+### {-}
+
+```{r eval = FALSE, fig.height=4}
+# ### Roadway and Type Timeseries
+# 
+# The below plot details daily counts of trips that do not have an image downloaded yet. It is broken out by roadway and tolly type. 
+
+backlog_heatmap = backlog_overview %>%
+  filter(flag_no_dl == 1) %>%
+  count_percent_zscore(grp_c = c(queried_at, roadway, status_type, exit_week, flag_no_dl), grp_p = c(queried_at, flag_no_dl)) %>%
+  arrange(exit_week, roadway, status_type, queried_at) %>%
+  group_by(exit_week, roadway, status_type) %>%  
+  mutate(farthest_lag = crrct0(count), 
+         simple_lag = count-lag(count)) %>%  
+  ungroup() %>%  
+  filter(queried_at == max(queried_at)) 
+
+backlog_heatmap %>%
+  complete(roadway,  nesting(status_type)) %>%
+  group_by(roadway) %>% 
+  group_map(~{
+              plot_ly(.x, x=~exit_week, y= ~status_type, z = ~count, type = "heatmap"
+                      ,showlegend = (.y == "99S")
+                      , legendgroup = ~count
+              ) %>%
+              layout(yaxis = list(
+                title = paste0(c(rep("&nbsp;", 20),
+                                 paste("<b>", as.character(.y), "</b>"),
+                                 rep("&nbsp;", 20),
+                                 rep("\n&nbsp;", 3)),
+                               collapse = "")))
+  }
+  ) %>% 
+  # subplot(nrows = 5)
+  subplot(nrows = NROW(.), margin = .05, shareX = T, shareY = T, titleY = TRUE) 
+```
+
+
+

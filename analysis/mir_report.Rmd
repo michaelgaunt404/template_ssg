@@ -51,20 +51,6 @@ library(reactable)
 <!--#source helpers/utilities===================================================
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #content in this section should be removed if in production - ok for dev -->
-```{r}
-# library(magrittr)
-# source(here("code/helpers_general.r"))
-# source(here("code/helpers_aggregation.r"))
-# source(here("code/helpers_plotly.r"))
-# source(here("code/helpers_DT.r"))
-# source(here("code/helpers_data_import.r"))
-
-
-#placing this here, mike can run if he's lazy and doesn't want to run two scripts
-#should always be commented out
-# source(here("code/script_process_icrs.r"))
-```
-
 ```{js}
 function filter_default(){
   document.getElementById("res_created_irr_disp").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
