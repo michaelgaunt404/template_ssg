@@ -284,7 +284,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -295,8 +295,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -309,9 +309,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>template_ssg/</code> <span
@@ -334,21 +334,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -439,15 +436,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtree71ec5fe00f619a8600c810ce06adf355c5fce0a8targetblank71ec5fea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtree3b7831632c7ae6ab1bf15a1f9c0092c926590bc3targetblank3b78316a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/michaelgaunt404/template_ssg/tree/71ec5fe00f619a8600c810ce06adf355c5fce0a8" target="_blank">71ec5fe</a>
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/3b7831632c7ae6ab1bf15a1f9c0092c926590bc3" target="_blank">3b78316</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtree71ec5fe00f619a8600c810ce06adf355c5fce0a8targetblank71ec5fea"
+id="strongRepositoryversionstrongahrefhttpsgithubcommichaelgaunt404templatessgtree3b7831632c7ae6ab1bf15a1f9c0092c926590bc3targetblank3b78316a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -457,7 +454,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/michaelgaunt404/template_ssg/tree/71ec5fe00f619a8600c810ce06adf355c5fce0a8" target="_blank">71ec5fe</a>.
+<a href="https://github.com/michaelgaunt404/template_ssg/tree/3b7831632c7ae6ab1bf15a1f9c0092c926590bc3" target="_blank">3b78316</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -479,7 +476,6 @@ Ignored files:
     Ignored:    _targets/meta/progress
     Ignored:    _targets/objects/
     Ignored:    _targets/user/
-    Ignored:    analysis/temp_analysis.html
     Ignored:    data/data_account_creation.csv
     Ignored:    data/data_acct_cycle_day_summary.csv
     Ignored:    data/data_csr_closure_summary.csv
@@ -492,21 +488,6 @@ Ignored files:
     Ignored:    data/index_imgdl_queue_rdsd.csv
     Ignored:    data/index_imgdl_queue_tllsts.csv
     Ignored:    data/nocp_counts_by_trip_date.csv
-
-Untracked files:
-    Untracked:  analysis/dashboard_ICRS.Rmd
-    Untracked:  analysis/escalation_tracking_report.Rmd
-    Untracked:  analysis/zz_test.Rmd
-    Untracked:  code/CopyOfscript_daily_data_query_to_large_cpu.R
-    Untracked:  dashboard/
-
-Unstaged changes:
-    Modified:   _targets.R
-    Modified:   _targets/meta/meta
-    Modified:   analysis/image_dl_queue_report.Rmd
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/mir_report.Rmd
-    Modified:   code/zz_global.R
 
 </code></pre>
 <p>
@@ -551,6 +532,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michaelgaunt404/template_ssg/blob/44e0ab0d887c366546042ae2021270fb833a69d8/analysis/index.Rmd" target="_blank">44e0ab0</a>
+</td>
+<td>
+michaelgaunt404
+</td>
+<td>
+2023-04-10
+</td>
+<td>
+add reports and dashboards
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michaelgaunt404/template_ssg/44e0ab0d887c366546042ae2021270fb833a69d8/docs/index.html" target="_blank">44e0ab0</a>
+</td>
+<td>
+michaelgaunt404
+</td>
+<td>
+2023-04-10
+</td>
+<td>
+add reports and dashboards
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -819,17 +834,21 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
+other attached packages:
+[1] workflowr_1.7.0
+
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7       rstudioapi_0.14  whisker_0.4      knitr_1.39      
- [5] magrittr_2.0.1   workflowr_1.7.0  R6_2.5.1         rlang_1.0.6     
- [9] fastmap_1.1.0    fansi_0.5.0      stringr_1.4.0    tools_4.1.0     
-[13] xfun_0.31        utf8_1.2.2       cli_3.3.0        git2r_0.30.1    
-[17] jquerylib_0.1.4  htmltools_0.5.2  ellipsis_0.3.2   rprojroot_2.0.3 
-[21] yaml_2.3.5       digest_0.6.27    tibble_3.1.7     lifecycle_1.0.3 
-[25] later_1.3.0      sass_0.4.1       vctrs_0.4.1      promises_1.2.0.1
-[29] fs_1.5.2         glue_1.6.2       evaluate_0.15    rmarkdown_2.14  
-[33] stringi_1.7.4    bslib_0.3.1      compiler_4.1.0   pillar_1.8.1    
-[37] jsonlite_1.7.2   httpuv_1.6.2     pkgconfig_2.0.3 </code></pre>
+ [1] Rcpp_1.0.7       compiler_4.1.0   pillar_1.8.1     bslib_0.3.1     
+ [5] later_1.3.0      git2r_0.30.1     jquerylib_0.1.4  tools_4.1.0     
+ [9] getPass_0.2-2    digest_0.6.27    jsonlite_1.7.2   evaluate_0.15   
+[13] tibble_3.1.7     lifecycle_1.0.3  pkgconfig_2.0.3  rlang_1.0.6     
+[17] cli_3.3.0        rstudioapi_0.14  yaml_2.3.5       xfun_0.31       
+[21] fastmap_1.1.0    httr_1.4.4       stringr_1.4.0    knitr_1.39      
+[25] sass_0.4.1       fs_1.5.2         vctrs_0.4.1      rprojroot_2.0.3 
+[29] glue_1.6.2       R6_2.5.1         processx_3.6.0   fansi_0.5.0     
+[33] rmarkdown_2.14   callr_3.7.0      magrittr_2.0.1   whisker_0.4     
+[37] ps_1.7.0         promises_1.2.0.1 htmltools_0.5.2  ellipsis_0.3.2  
+[41] httpuv_1.6.2     utf8_1.2.2       stringi_1.7.4   </code></pre>
 </div>
 
 
