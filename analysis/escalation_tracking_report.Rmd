@@ -1,0 +1,277 @@
+---
+title: "Escalation Tracking"
+subtitle: "Monitoring rejected plates via image request review process."
+author: "Mike Gaunt"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, cache.lazy = FALSE, autodep = TRUE, warning = FALSE, 
+  message = FALSE, echo = TRUE, dpi = 180,
+  fig.width = 5, fig.height = 3, echo = FALSE
+  )
+```
+
+<!--#general comments===========================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This is [[insert description here - what it does/solve]]
+#
+# By: mike gaunt, michael.gaunt@wsp.com
+#
+# README: [[insert brief readme here]]
+#-------- [[insert brief readme here]]
+#
+# *please use 80 character margins
+# *please go to https://pkgs.rstudio.com/flexdashboard/articles/layouts.html
+# to explore the different layouts available for the flexdashboard framework
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!--#library set-up=============================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{r}
+library(magrittr)
+library(tidyverse)
+library(plotly)
+library(data.table)
+library(lubridate)
+library(crosstalk)
+library(here)
+library(kableExtra)
+library(gauntlet)
+library(targets)
+library(reactable)
+```
+
+<!--#source helpers/utilities===================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev -->
+```{js}
+function filter_default(){
+  document.getElementById("res_created_irr_disp").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+  document.getElementById("res_updatedat").getElementsByClassName("selectized")[0].selectize.setValue("4. Counts greater than 10,000",false) 
+}
+    
+$(document).ready(filter_default);
+```
+
+<!--#source data================================================================
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#content in this section should be removed if in production - ok for dev 
+#area to upload data with and to perform initial munging
+#please add test data here so that others may use/unit test these scripts -->
+
+```{r cache=FALSE}
+data_escalation = tar_read(data_escalation)
+data_escalation = data_escalation %>%  mutate(across(c("floor_month", "queried_at")))
+data_escalation_crrnt = data_escalation %>%  filter(queried_at == max(queried_at))
+data_escalation_prev = data_escalation %>%  filter(queried_at != max(queried_at)) %>% filter(queried_at == max(queried_at))
+```
+
+```{r}
+escalation_cpq = data_escalation %>% 
+  count_percent_zscore(
+    grp_c = c('queried_at', 'escalationcount')
+    ,grp_p = c('queried_at')
+    ,col = tp_count, rnd = 3) %>%
+  arrange(queried_at) %>%
+  group_by(escalationcount) %>%
+  mutate(tp_count_diff = count-lag(count)
+         ,tp_count_diffp = dgt2(tp_count_diff/lag(count))) %>%  
+  ungroup()
+
+escalation_cpqm = data_escalation %>% 
+  count_percent_zscore(
+    grp_c = c('queried_at', 'floor_month', 'escalationcount')
+    ,grp_p = c('queried_at', 'floor_month')
+    ,col = tp_count, rnd = 3) %>%
+  arrange(queried_at) %>%
+  group_by(escalationcount, floor_month) %>%
+  mutate(tp_count_diff = count-lag(count)
+         ,tp_count_diffp = dgt2(tp_count_diff/lag(count))) %>%  
+  ungroup()
+```
+
+
+## Intro
+
+Report Status: `Experimental`
+
+Current report data queried on: ``r max(data_escalation_crrnt$queried_at)``.
+Data in this report extends from ``r min(data_escalation$floor_month)`` to ``r max(data_escalation$floor_month)``.  
+
+Below are the days the data has been queried.
+```{r}
+temp_plot = data_escalation %>%
+  mutate(count = 1) %>%
+  select(queried_at, count) %>%
+  unique() %>%
+  ggplot(aes(queried_at, count)) +
+  geom_line() +
+  geom_point(size = 5, shape = 21, fill = "white") +
+  labs(y = "", x = "Query Date") +
+  theme_classic() +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank()) 
+
+plotly::ggplotly(temp_plot)
+```
+
+## Summary/Observations
+
+<details>
+<summary>Click to Expand</summary>
+
+::: {style="padding: 1em; background: #DCDCDC; border-radius: 10px"}
+ 
+Removed. 
+
+:::
+
+</details> 
+
+## Data Overview
+
+The data used for this report is pre-aggregated count data - aggregation takes place in ETAN database. 
+Trips are aggregated by query date, the month the trip occurred in, and escalation status.
+
+Variable Summary:
+
+<details>
+<summary>Click to Expand</summary>
+
+Grouping Attributes: 
+
++ `escalationcount`: the number of times a trip has been escalated
++ `floor_month`: the year/month a trip occurred in
++ `queried_at`: date a record was queried
+
+Count Attributes:
+
++ `tp_count`: count of trips given unique combinations of the above attributes
+
+This table displays a sample of the raw trip level data. 
+```{r}
+
+data_escalation %>% 
+  sample_n(200) %>% 
+  reactable(height = 300, defaultPageSize = 1000
+            ,striped = T, highlight = T, bordered = F
+            , wrap = FALSE, resizable = TRUE, compact = T)
+```
+
+</details> 
+
+## Current State of Escalation
+
+```{r}
+temp_plot = data_escalation_crrnt %>% 
+  ggplot(aes(floor_month, tp_count)) +
+  geom_col() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+
+### Changes in Escalation Counts {.tabset}
+
+#### Counts
+```{r}
+temp_plot = escalation_cpq %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  ggplot(aes(queried_at, count)) +
+  # ggplot(aes(queried_at, tp_count_diff)) +
+  # ggplot(aes(queried_at, tp_count_diffp)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+#### Change in Counts 
+```{r}
+temp_plot = escalation_cpq %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  # ggplot(aes(queried_at, count)) +
+  ggplot(aes(queried_at, tp_count_diff)) +
+  # ggplot(aes(queried_at, tp_count_diffp)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+#### %Change in Counts 
+```{r}
+temp_plot = escalation_cpq %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  # ggplot(aes(queried_at, count)) +
+  # ggplot(aes(queried_at, tp_count_diff)) +
+  ggplot(aes(queried_at, tp_count_diffp)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+### {-}
+
+### Changes in Escalation Counts by Floor Month {.tabset}
+
+#### Counts
+```{r}
+temp_plot = escalation_cpqm %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  ggplot(aes(queried_at, count, group = floor_month)) +
+  # ggplot(aes(queried_at, tp_count_diff)) +
+  # ggplot(aes(queried_at, tp_count_diffp)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+#### Change in Counts 
+```{r}
+temp_plot = escalation_cpqm %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  # ggplot(aes(queried_at, count, group = floor_month)) +
+  ggplot(aes(queried_at, tp_count_diff, group = floor_month)) +
+  # ggplot(aes(queried_at, tp_count_diffp)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+#### %Change in Counts 
+```{r}
+temp_plot = escalation_cpqm %>%
+  filter(queried_at > as_date("2023-01-01")) %>%
+  # ggplot(aes(queried_at, count, group = floor_month)) +
+  # ggplot(aes(queried_at, tp_count_diff)) +
+  ggplot(aes(queried_at, tp_count_diffp, group = floor_month)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(rows = vars(escalationcount), scales = "free")
+
+plotly::ggplotly(temp_plot)
+```
+
+### {-}
+
+<!-- end -->
+

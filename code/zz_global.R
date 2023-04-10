@@ -29,8 +29,6 @@ package_load(pkgs)
 #manual step to send/receive data from Google drive location
 #this is ran on mikes local computer
 
-
-
 #helpful targets functions======================================================
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #manual step to send/receive data from Google drive location

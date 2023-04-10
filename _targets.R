@@ -95,33 +95,37 @@ list(
   ##Plate Identification Result====
   ,tar_target(pltobject_qfree_pir_status, plot_qfree_pir_status(data_icrs))
   ,tar_target(pltobject_qfree_pir_method, plot_qfree_pir_method(data_icrs))
+  #escalation===================================================================
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ,tar_target(file_escalation, here("data", "escalation_counts_by_trip_date.csv"), format = "file")
+  ,tar_target(data_escalation, fread(file_escalation))
   #daily_reporting_objects======================================================
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ##trip_posting_summary====
   ,tar_target(file_trip_posting_summary
               ,here("data", "data_trip_posting_summary.csv"), format = "file")
-  ,tar_target(data_trp_pstng_smmry_by_pstngdt
-              ,process_trp_pstng_smmry_by_pstngdt(file_trip_posting_summary))
+  # ,tar_target(data_trp_pstng_smmry_by_pstngdt
+  #             ,process_trp_pstng_smmry_by_pstngdt(file_trip_posting_summary))
   ,tar_target(tble_objct_trp_pstng_smmry_by_pstngdt
               ,table_trp_pstng_smmry_by_pstngdt(
-                data = data_trp_pstng_smmry_by_pstngdt
+                file = file_trip_posting_summary
                 ,id = "data_trp_pstng_smmry_by_pstngdt"))
-  ,tar_target(data_trp_pstng_smmry_by_trpdt
-              ,process_trp_pstng_smmry_by_trpdt(file_trip_posting_summary))
+  # ,tar_target(data_trp_pstng_smmry_by_trpdt
+  #             ,process_trp_pstng_smmry_by_trpdt(file_trip_posting_summary))
   ,tar_target(tble_objct_trp_pstng_smmry_by_trpdt
               ,table_trp_pstng_smmry_by_trpdt(
-                data = data_trp_pstng_smmry_by_trpdt
+                file = file_trip_posting_summary
                 ,id = "data_trp_pstng_smmry_by_trpdt"))
   ##pass_fulfillment====
   ,tar_target(file_pass_fulfillment
               ,here("data", "data_pass_fulfillment.csv"), format = "file")
-  ,tar_target(data_pass_fulfillment
-              ,process_pss_flfllmnt(file_pass_fulfillment))
+  # ,tar_target(data_pass_fulfillment
+  #             ,process_pss_flfllmnt(file_pass_fulfillment))
   ,tar_target(tble_pass_fulfillment
               ,table_pss_flfllmnt(
-                data = data_pass_fulfillment
+                file = file_pass_fulfillment
                 ,id = "data_pass_fulfillment"))
-  ##pass_fulfillment====
+  ##acct_cycle====
   ,tar_target(file_acct_cycle_day_smmry
               ,here("data", "data_acct_cycle_day_summary.csv"), format = "file")
   ,tar_target(
@@ -134,5 +138,19 @@ list(
     ,table_accts_cycleDay_wd(
       file = file_acct_cycle_day_smmry
       ,id = "data_accts_cycleDay_wd"))
+  ##acct_type====
+  ,tar_target(file_acct_type
+              ,here("data", "data_account_creation.csv"), format = "file")
+  ,tar_target(
+    tble_accts_type
+    ,table_accts_type(
+      file = file_acct_type
+      ,id = "data_acct_type"))
+  ,tar_target(
+    tble_accts_type_wd
+    ,table_accts_type_wd(
+      file = file_acct_type
+      ,id = "data_acct_type_wd"))
+
   ##end====
 )

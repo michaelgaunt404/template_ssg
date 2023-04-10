@@ -54,9 +54,6 @@ library(reactable)
 <!--#source helpers/utilities===================================================
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #content in this section should be removed if in production - ok for dev -->
-```{r}
-# source(here::here("code/helpers_DT.r"))
-```
 
 <!--#source data================================================================
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -119,7 +116,6 @@ Below is a sample of the data for I405 on 2021-11-17.
   filter(trip_date == as_date("2021-11-17"), 
          roadway == "I405")  %>%  
   reactable()
-  # dt_common(y = 200, pl = 1000, dom = "Bftr", pretty = F)
 ```
 
 </details> 
